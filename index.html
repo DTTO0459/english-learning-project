@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Databases vs. Spreadsheets — Interactive English Learning Experience</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            canvas: '#FAF9F6',
+            surface: '#FFFFFF',
+            ink: '#0F172A',
+            muted: '#475569',
+            borderwarm: '#E5E2DC',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #FAF9F6;
+      color: #0F172A;
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, h4, .font-display {
+      font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes pulseRing {
+      0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.35); }
+      70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.95) translateY(8px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes celebrate {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.06); }
+      70% { transform: scale(0.98); }
+      100% { transform: scale(1); }
+    }
+    .animate-float { animation: floatSlow 5s ease-in-out infinite; }
+    .animate-pulse-ring { animation: pulseRing 2.2s infinite; }
+    .animate-pop { animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-celebrate { animation: celebrate 0.45s ease-out; }
+    .vocab-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .vocab-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 32px -12px rgba(15, 23, 42, 0.12);
+      border-color: #93C5FD;
+    }
+    .sheet-grid td, .sheet-grid th {
+      border: 1px solid #CBD5E1;
+    }
+    /* Custom scrollbar for modal */
+    .modal-scroll::-webkit-scrollbar { width: 8px; }
+    .modal-scroll::-webkit-scrollbar-track { background: #F1F5F9; }
+    .modal-scroll::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 999px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-100 selection:text-blue-900">
+
+  <!-- TOP NAVIGATION BAR (Classroom-First & Uncluttered) -->
+  <header class="sticky top-0 z-40 bg-canvas/95 backdrop-blur border-b border-borderwarm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <a href="#hero" class="flex items-center gap-2.5 shrink-0 group">
+        <span class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-mono font-bold text-sm shadow-sm group-hover:bg-blue-600 transition-colors">D/S</span>
+        <span class="font-display font-bold text-slate-900 text-base sm:text-lg tracking-tight hidden sm:inline">Databases vs. Spreadsheets</span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-1 bg-white border border-borderwarm rounded-full p-1 shadow-sm">
+        <a href="#explorer" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors">11 Words</a>
+        <a href="#practice" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors">Let's Practice!</a>
+        <a href="#challenge" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors">Data Master Quiz</a>
+        <a href="#comparison" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors">Compare</a>
+      </nav>
+
+      <div class="flex items-center gap-2.5 shrink-0">
+        <!-- Global Progress Pill -->
+        <div class="flex items-center gap-2 bg-white border border-borderwarm rounded-full px-3.5 py-1.5 shadow-sm" title="Words mastered via Knowledge Checks">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500" id="nav-progress-dot"></span>
+          <span class="text-xs sm:text-sm font-semibold text-slate-800 whitespace-nowrap"><span id="nav-progress-count">0</span> / 11 Learned</span>
+        </div>
+        <!-- Sound Toggle -->
+        <button id="sound-toggle-btn" type="button" class="p-2 rounded-full bg-white border border-borderwarm text-slate-700 hover:bg-slate-100 transition-colors" aria-label="Toggle sound effects" title="Sound Effects On/Off">
+          <svg id="sound-icon-on" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.54 8.46a5 5 0 010 7.07"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+          <svg id="sound-icon-off" class="w-5 h-5 hidden text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M23 9l-6 6M17 9l6 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1">
+    <!-- SECTION A — CINEMATIC HERO EXPERIENCE -->
+    <section id="hero" class="relative overflow-hidden pt-10 pb-16 sm:pt-16 sm:pb-24 border-b border-borderwarm bg-gradient-to-b from-canvas to-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          <!-- Left Copy -->
+          <div class="lg:col-span-6 space-y-6">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs sm:text-sm font-semibold tracking-wide uppercase">
+              <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+              English for Computer &amp; Information Technologies
+            </div>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-extrabold text-slate-900 tracking-tight leading-[1.08]">
+              Databases vs. Spreadsheets
+            </h1>
+            <p class="text-xl sm:text-2xl font-display font-semibold text-blue-700">
+              Discover the digital world behind the data.
+            </p>
+            <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl">
+              Learn 11 essential computer terms through interactive visuals, simple explanations, and fun challenges.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-wrap items-center gap-4 pt-2">
+              <button id="hero-start-btn" type="button" class="px-7 py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-display font-bold text-lg shadow-lg shadow-blue-600/20 transition-all hover:-translate-y-0.5 flex items-center gap-2.5 animate-pulse-ring">
+                <span>Start Learning</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+              </button>
+              <button id="hero-how-btn" type="button" class="px-6 py-4 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-display font-semibold text-lg transition-all flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4m0-4h.01"/></svg>
+                <span>How It Works</span>
+              </button>
+            </div>
+
+            <!-- Animated Learning Progress Indicator -->
+            <div class="pt-4 max-w-md">
+              <div class="flex items-center justify-between text-sm font-semibold text-slate-700 mb-2">
+                <span>Classroom Learning Progress</span>
+                <span class="text-blue-700 font-mono"><span id="hero-progress-count">0</span> / 11 Words</span>
+              </div>
+              <div class="h-3 w-full bg-slate-200 rounded-full overflow-hidden p-0.5">
+                <div id="hero-progress-bar" class="h-full bg-gradient-to-r from-blue-600 to-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <div id="hero-progress-dots" class="flex items-center gap-1.5 mt-2.5"></div>
+            </div>
+          </div>
+
+          <!-- Right Hero Visual Illustration (Spreadsheet + Database Live Architecture) -->
+          <div class="lg:col-span-6">
+            <div class="relative bg-white rounded-3xl border border-borderwarm shadow-xl p-5 sm:p-7 animate-float">
+              <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+                  <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                  <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                  <span class="ml-2 text-xs font-mono text-slate-500">campus_data_studio.app</span>
+                </div>
+                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Interactive Preview</span>
+              </div>
+
+              <div class="grid sm:grid-cols-2 gap-4 items-stretch">
+                <!-- Mini Spreadsheet Visual -->
+                <div class="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">Spreadsheet</span>
+                      <span class="text-[11px] font-mono bg-white px-2 py-0.5 rounded border border-emerald-200 text-emerald-700">=SUM(B2:B4)</span>
+                    </div>
+                    <table class="w-full text-xs bg-white rounded-lg overflow-hidden border-collapse sheet-grid">
+                      <thead class="bg-slate-100 text-slate-600 font-mono">
+                        <tr><th class="p-1.5 w-7"></th><th class="p-1.5">A</th><th class="p-1.5">B</th></tr>
+                      </thead>
+                      <tbody class="text-slate-800">
+                        <tr><td class="p-1.5 bg-slate-100 font-mono text-center text-slate-500">1</td><td class="p-1.5 font-semibold">Item</td><td class="p-1.5 font-semibold text-right">Cost</td></tr>
+                        <tr><td class="p-1.5 bg-slate-100 font-mono text-center text-slate-500">2</td><td class="p-1.5">Books</td><td class="p-1.5 text-right font-mono">$40</td></tr>
+                        <tr><td class="p-1.5 bg-slate-100 font-mono text-center text-slate-500">3</td><td class="p-1.5 bg-blue-50 ring-2 ring-blue-500 font-semibold text-blue-900">Coffee</td><td class="p-1.5 text-right font-mono">$15</td></tr>
+                        <tr class="bg-emerald-50 font-bold"><td class="p-1.5 bg-slate-100 font-mono text-center text-slate-500">4</td><td class="p-1.5 text-emerald-900">Total</td><td class="p-1.5 text-right font-mono text-emerald-700">$55</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p class="text-[11px] text-emerald-800 mt-3 font-medium">Cells + Formulas + Functions</p>
+                </div>
+
+                <!-- Mini Database Visual -->
+                <div class="rounded-2xl border border-indigo-200 bg-indigo-50/40 p-4 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-xs font-bold uppercase tracking-wider text-indigo-800">Database</span>
+                      <span class="text-[11px] font-mono bg-white px-2 py-0.5 rounded border border-indigo-200 text-indigo-700">QUERY</span>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="bg-white rounded-lg p-2.5 border border-indigo-100 shadow-sm">
+                        <div class="flex items-center justify-between text-[11px] font-bold text-indigo-900 mb-1">
+                          <span>Students_Table</span>
+                          <span class="font-mono text-indigo-500">3 Fields</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1 text-[10px] font-mono bg-slate-50 p-1.5 rounded text-slate-700">
+                          <span class="font-bold text-indigo-700">ID</span>
+                          <span class="font-bold text-indigo-700">Name</span>
+                          <span class="font-bold text-indigo-700">Major</span>
+                          <span>101</span><span>Ali</span><span>IT</span>
+                          <span>102</span><span>Sara</span><span>CS</span>
+                        </div>
+                      </div>
+                      <div class="bg-indigo-600 text-white rounded-lg px-3 py-2 text-[11px] font-mono flex items-center justify-between">
+                        <span>FIND Major = "IT"</span>
+                        <span class="bg-white/20 px-1.5 py-0.5 rounded">1 match</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-[11px] text-indigo-800 mt-3 font-medium">Tables + Fields + Queries</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION B — VOCABULARY EXPLORER (11 TERMS) -->
+    <section id="explorer" class="py-16 sm:py-20 bg-canvas">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+          <div>
+            <span class="text-sm font-bold uppercase tracking-wider text-blue-700">Vocabulary Explorer</span>
+            <h2 class="text-3xl sm:text-4xl font-display font-extrabold text-slate-900 mt-1">11 Essential Terms</h2>
+            <p class="text-slate-600 text-lg mt-2 max-w-2xl">
+              Click any visual card to open its interactive lesson: <span class="font-semibold text-slate-800">SEE → GUESS → DISCOVER → UNDERSTAND → INTERACT → REMEMBER</span>.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button type="button" data-filter="all" class="explorer-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-900 text-white transition-colors">All (11)</button>
+            <button type="button" data-filter="spreadsheet" class="explorer-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-white border border-borderwarm text-slate-700 hover:bg-slate-100 transition-colors">Spreadsheets</button>
+            <button type="button" data-filter="database" class="explorer-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-white border border-borderwarm text-slate-700 hover:bg-slate-100 transition-colors">Databases</button>
+            <button type="button" data-filter="both" class="explorer-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-white border border-borderwarm text-slate-700 hover:bg-slate-100 transition-colors">Shared</button>
+          </div>
+        </div>
+
+        <!-- 11 Vocabulary Cards Grid -->
+        <div id="vocab-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION D — INTERACTIVE CLASSROOM ACTIVITIES ("LET'S PRACTICE!") -->
+    <section id="practice" class="py-16 sm:py-20 bg-white border-t border-b border-borderwarm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-10">
+          <span class="text-sm font-bold uppercase tracking-wider text-emerald-700">Interactive Classroom Activities</span>
+          <h2 class="text-3xl sm:text-5xl font-display font-extrabold text-slate-900 mt-1">LET'S PRACTICE!</h2>
+          <p class="text-slate-600 text-lg mt-3">
+            Choose a classroom activity below. Play together on the big screen to test what you learned!
+          </p>
+        </div>
+
+        <!-- Game Selector Tabs -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
+          <button type="button" data-game="match" class="game-tab-btn text-left p-4 sm:p-5 rounded-2xl border-2 border-blue-600 bg-blue-50/70 transition-all">
+            <div class="text-xs font-bold uppercase tracking-wider text-blue-700">Game 1</div>
+            <div class="font-display font-bold text-lg text-slate-900 mt-0.5">Match the Word</div>
+            <div class="text-xs text-slate-600 mt-1">Connect terms to meanings</div>
+          </button>
+          <button type="button" data-game="guess" class="game-tab-btn text-left p-4 sm:p-5 rounded-2xl border-2 border-borderwarm bg-canvas hover:bg-slate-50 transition-all">
+            <div class="text-xs font-bold uppercase tracking-wider text-indigo-700">Game 2</div>
+            <div class="font-display font-bold text-lg text-slate-900 mt-0.5">Guess the Concept</div>
+            <div class="text-xs text-slate-600 mt-1">Identify the visual clue</div>
+          </button>
+          <button type="button" data-game="blank" class="game-tab-btn text-left p-4 sm:p-5 rounded-2xl border-2 border-borderwarm bg-canvas hover:bg-slate-50 transition-all">
+            <div class="text-xs font-bold uppercase tracking-wider text-emerald-700">Game 3</div>
+            <div class="font-display font-bold text-lg text-slate-900 mt-0.5">Fill in the Blank</div>
+            <div class="text-xs text-slate-600 mt-1">Complete the sentence</div>
+          </button>
+          <button type="button" data-game="tf" class="game-tab-btn text-left p-4 sm:p-5 rounded-2xl border-2 border-borderwarm bg-canvas hover:bg-slate-50 transition-all">
+            <div class="text-xs font-bold uppercase tracking-wider text-amber-700">Game 4</div>
+            <div class="font-display font-bold text-lg text-slate-900 mt-0.5">True or False</div>
+            <div class="text-xs text-slate-600 mt-1">Quick classroom check</div>
+          </button>
+        </div>
+
+        <!-- Active Game Stage -->
+        <div id="game-stage" class="bg-canvas rounded-3xl border border-borderwarm p-6 sm:p-10 shadow-sm min-h-[420px]">
+          <!-- Rendered dynamically by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION E — FINAL KNOWLEDGE CHALLENGE ("ARE YOU A DATA MASTER?") -->
+    <section id="challenge" class="py-16 sm:py-20 bg-slate-900 text-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+          <span class="inline-block px-3.5 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-bold uppercase tracking-wider mb-3">Final Knowledge Challenge</span>
+          <h2 class="text-3xl sm:text-5xl font-display font-extrabold tracking-tight">ARE YOU A DATA MASTER?</h2>
+          <p class="text-slate-300 text-lg mt-3">
+            11 randomized questions covering every single vocabulary term. Let's see your classroom rank!
+          </p>
+        </div>
+
+        <div id="master-quiz-stage" class="bg-slate-800/80 border border-slate-700 rounded-3xl p-6 sm:p-10 shadow-2xl">
+          <!-- Rendered dynamically by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION F — DATABASES VS. SPREADSHEETS COMPARISON -->
+    <section id="comparison" class="py-16 sm:py-20 bg-canvas">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <span class="text-sm font-bold uppercase tracking-wider text-blue-700">The Big Picture</span>
+          <h2 class="text-3xl sm:text-4xl font-display font-extrabold text-slate-900 mt-1">Databases vs. Spreadsheets</h2>
+          <p class="text-slate-600 text-lg mt-3">
+            Both tools work with data, but they are built for different jobs. Here is the simple difference.
+          </p>
+        </div>
+
+        <!-- Two Visually Distinct Sides -->
+        <div class="grid lg:grid-cols-2 gap-8 mb-12">
+          <!-- LEFT: SPREADSHEETS -->
+          <div class="bg-white rounded-3xl border-2 border-emerald-200 p-7 sm:p-9 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Left Side</span>
+                    <h3 class="text-2xl sm:text-3xl font-display font-extrabold text-slate-900">SPREADSHEETS</h3>
+                  </div>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200">Grid &amp; Math</span>
+              </div>
+
+              <p class="text-lg font-medium text-emerald-900 bg-emerald-50 border border-emerald-200 rounded-2xl p-4 mb-6">
+                "A spreadsheet is useful for calculations, lists, and small data tasks."
+              </p>
+
+              <div class="space-y-4 text-slate-700">
+                <div class="flex gap-3">
+                  <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
+                  <div><strong class="text-slate-900">How data is organized:</strong> In a flat grid of rows, columns, cells, and worksheets.</div>
+                </div>
+                <div class="flex gap-3">
+                  <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
+                  <div><strong class="text-slate-900">How data is stored:</strong> Usually in one file on your computer or cloud drive.</div>
+                </div>
+                <div class="flex gap-3">
+                  <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
+                  <div><strong class="text-slate-900">How users work with it:</strong> Click cells directly, type numbers, and write formulas like <code class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">=SUM(A1:A5)</code>.</div>
+                </div>
+                <div class="flex gap-3">
+                  <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">4</span>
+                  <div><strong class="text-slate-900">Best examples:</strong> Monthly budgets, class grade lists, simple expense trackers.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: DATABASES -->
+          <div class="bg-white rounded-3xl border-2 border-indigo-200 p-7 sm:p-9 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-700">Right Side</span>
+                    <h3 class="text-2xl sm:text-3xl font-display font-extrabold text-slate-900">DATABASES</h3>
+                  </div>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-800 text-xs font-bold border border-indigo-200">Connected Records</span>
+              </div>
+
+              <p class="text-lg font-medium text-indigo-900 bg-indigo-50 border border-indigo-200 rounded-2xl p-4 mb-6">
+                "A database is useful for storing, managing, and retrieving larger collections of related information."
+              </p>
+
+              <div class="space-y-4 text-slate-700">
+                <div class="flex gap-3">
+                  <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
+                  <div><strong class="text-slate-900">How data is organized:</strong> In connected tables with strict fields (columns) and records (rows).</div>
+                </div>
+                <div class="flex gap-3">
+                  <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
+                  <div><strong class="text-slate-900">How data is stored:</strong> In a structured system built to handle thousands or millions of records safely.</div>
+                </div>
+                <div class="flex gap-3">
+                  <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
+                  <div><strong class="text-slate-900">How users work with it:</strong> Search, filter, and retrieve exact data using a <strong class="text-indigo-700">Query</strong>.</div>
+                </div>
+                <div class="flex gap-3">
+                  <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">4</span>
+                  <div><strong class="text-slate-900">Best examples:</strong> University student systems, hospital records, online shopping stores.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Scenario Classifier -->
+        <div class="bg-white rounded-3xl border border-borderwarm p-6 sm:p-8 shadow-sm">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <h3 class="text-xl sm:text-2xl font-display font-bold text-slate-900">Classroom Check: Which Tool Fits Best?</h3>
+              <p class="text-slate-600 text-sm sm:text-base">Click a real-life scenario to see whether a Spreadsheet or a Database is the better choice.</p>
+            </div>
+          </div>
+          <div id="scenario-chooser" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Rendered by JS -->
+          </div>
+          <div id="scenario-answer" class="mt-5 hidden rounded-2xl p-5 border animate-pop"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-white border-t border-borderwarm py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
+      <div class="font-medium text-slate-700">Databases vs. Spreadsheets — ESP Classroom Learning Experience</div>
+      <div>11 Interactive Concepts • 4 Practice Games • Data Master Challenge</div>
+    </div>
+  </footer>
+
+  <!-- SECTION C — DEDICATED INTERACTIVE LEARNING SCREEN (FULL-SCREEN MODAL) -->
+  <div id="learning-modal" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-2 sm:p-6">
+    <div class="bg-white w-full max-w-5xl max-h-[94vh] rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-pop">
+      <!-- Modal Header & Navigation -->
+      <div class="px-5 sm:px-8 py-4 bg-canvas border-b border-borderwarm flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <span id="modal-word-counter" class="px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-mono font-bold">1 / 11</span>
+          <span id="modal-category-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Spreadsheet</span>
+          <span id="modal-mastered-pill" class="hidden px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">✓ Mastered</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="modal-prev-btn" type="button" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 text-sm font-semibold flex items-center gap-1.5 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            <span class="hidden sm:inline">Previous Word</span>
+          </button>
+          <button id="modal-next-btn" type="button" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 text-sm font-semibold flex items-center gap-1.5 transition-colors">
+            <span class="hidden sm:inline">Next Word</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <button id="modal-close-btn" type="button" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold flex items-center gap-1.5 transition-colors">
+            <span>Close</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pedagogical Philosophy Stepper -->
+      <div class="px-5 sm:px-8 py-2.5 bg-blue-50/70 border-b border-blue-100 flex items-center justify-between gap-2 overflow-x-auto text-[11px] sm:text-xs font-bold tracking-wider uppercase text-blue-800">
+        <span>1. SEE</span><span class="text-blue-300">→</span>
+        <span>2. GUESS</span><span class="text-blue-300">→</span>
+        <span>3. DISCOVER</span><span class="text-blue-300">→</span>
+        <span>4. UNDERSTAND</span><span class="text-blue-300">→</span>
+        <span>5. INTERACT</span><span class="text-blue-300">→</span>
+        <span>6. REMEMBER</span>
+      </div>
+
+      <!-- Modal Scrollable Body -->
+      <div id="modal-body" class="flex-1 overflow-y-auto modal-scroll p-5 sm:p-8 space-y-8">
+        <!-- Populated dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS MODAL -->
+  <div id="how-modal" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 p-6 sm:p-8 animate-pop">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-2xl font-display font-extrabold text-slate-900">How This Classroom Experience Works</h3>
+        <button id="how-close-btn" type="button" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="space-y-4 text-slate-700 text-base">
+        <div class="p-4 rounded-2xl bg-blue-50 border border-blue-100">
+          <div class="font-bold text-blue-900 mb-1">Step 1: Explore the 11 Terms</div>
+          <p class="text-sm text-blue-800">Click any vocabulary card to open its interactive lesson. Every word follows: <strong>SEE → GUESS → DISCOVER → UNDERSTAND → INTERACT → REMEMBER</strong>.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
+          <div class="font-bold text-emerald-900 mb-1">Step 2: Try the Live Interactive Demos</div>
+          <p class="text-sm text-emerald-800">Click cells, test math operators, run database queries, sort lists, and switch worksheets right inside each lesson.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-amber-50 border border-amber-100">
+          <div class="font-bold text-amber-900 mb-1">Step 3: Play &amp; Compete Together</div>
+          <p class="text-sm text-amber-800">Play the 4 classroom mini-games in <strong>LET'S PRACTICE!</strong> and finish with the 11-question <strong>ARE YOU A DATA MASTER?</strong> challenge.</p>
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button id="how-start-btn" type="button" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold">Got It — Let's Start!</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // AUDIO FEEDBACK (Web Audio API — zero external sound files, muteable)
+    // =========================================================================
+    const AudioFX = {
+      enabled: true,
+      ctx: null,
+      init() {
+        if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AC();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => {});
+        }
+      },
+      playTone(freq, duration, type = 'sine', delay = 0, vol = 0.08) {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + delay);
+          gain.gain.setValueAtTime(vol, this.ctx.currentTime + delay);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + delay + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + delay);
+          osc.stop(this.ctx.currentTime + delay + duration);
+        } catch (e) {}
+      },
+      success() {
+        this.playTone(523.25, 0.14, 'sine', 0);
+        this.playTone(659.25, 0.18, 'sine', 0.09);
+      },
+      error() {
+        this.playTone(240, 0.18, 'triangle', 0, 0.07);
+      },
+      win() {
+        this.playTone(523.25, 0.14, 'sine', 0);
+        this.playTone(659.25, 0.14, 'sine', 0.1);
+        this.playTone(783.99, 0.25, 'sine', 0.2);
+      }
+    };
+
+    // =========================================================================
+    // 11 VOCABULARY ITEMS — COMPLETE PEDAGOGICAL DATA
+    // =========================================================================
+    const VOCAB_DATA = [
+      {
+        id: 'cell',
+        word: 'Cell',
+        category: 'spreadsheet',
+        categoryLabel: 'Spreadsheet',
+        clue: 'Where does one single piece of data live inside a grid?',
+        definition: 'A cell is one small box in a spreadsheet. It is where you enter information.',
+        example: "Imagine a spreadsheet with students' names and exam scores. Each box containing a name or score is a cell.",
+        useful: 'Cells help us organize information neatly and perform calculations using exact locations like B2 or C3.',
+        tfStatement: 'A cell is one single box in a spreadsheet where you can type a number or word.',
+        tfAnswer: true,
+        tfExplain: 'True! Every individual box at the meeting point of a column and a row is called a cell.',
+        blankSentence: 'A single box in a spreadsheet where you enter information is called a ______.',
+        blankOptions: ['Cell', 'Query', 'Database'],
+        checkQuestion: 'Which part of a spreadsheet is called a cell?',
+        checkOptions: [
+          'One individual box where a column and row meet',
+          'The entire file containing many worksheets',
+          'A question that searches a database'
+        ],
+        checkCorrect: 0,
+        checkFeedbackCorrect: 'Excellent! A cell is one individual box in a spreadsheet.',
+        checkFeedbackWrong: 'Not quite! Look at the highlighted single box in the grid and try again.',
+        svgThumb: `
+          <svg viewBox="0 0 220 130" class="w-full h-32">
+            <rect x="15" y="12" width="190" height="106" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+            <rect x="15" y="12" width="190" height="24" rx="8" fill="#F1F5F9"/>
+            <text x="65" y="28" font-size="11" font-family="monospace" font-weight="700" fill="#475569">A</text>
+            <text x="120" y="28" font-size="11" font-family="monospace" font-weight="700" fill="#2563EB">B</text>
+            <text x="172" y="28" font-size="11" font-family="monospace" font-weight="700" fill="#475569">C</text>
+            <line x1="42" y1="12" x2="42" y2="118" stroke="#CBD5E1"/>
+            <line x1="96" y1="12" x2="96" y2="118" stroke="#CBD5E1"/>
+            <line x1="150" y1="12" x2="150" y2="118" stroke="#CBD5E1"/>
+            <line x1="15" y1="36" x2="205" y2="36" stroke="#CBD5E1"/>
+            <line x1="15" y1="63" x2="205" y2="63" stroke="#CBD5E1"/>
+            <line x1="15" y1="90" x2="205" y2="90" stroke="#CBD5E1"/>
+            <text x="25" y="54" font-size="10" font-family="monospace" fill="#64748B">1</text>
+            <text x="25" y="81" font-size="10" font-family="monospace" fill="#2563EB" font-weight="700">2</text>
+            <text x="25" y="108" font-size="10" font-family="monospace" fill="#64748B">3</text>
+            <rect x="97" y="64" width="52" height="25" fill="#DBEAFE" stroke="#2563EB" stroke-width="2.5" rx="3"/>
+            <text x="113" y="81" font-size="11" font-family="monospace" font-weight="700" fill="#1E40AF">92</text>
+            <circle cx="152" cy="89" r="4" fill="#2563EB"/>
+          </svg>`
+      },
+      {
+        id: 'database-field',
+        word: 'Database Field',
+        category: 'database',
+        categoryLabel: 'Database',
+        clue: 'What do we call one specific column, like "Email" or "Name"?',
+        definition: 'A database field is a single column in a database table that stores one specific type of information.',
+        example: 'In a university student table, "Email" is a database field because every box in that column holds a student email address.',
+        useful: 'Fields keep data clean and consistent so every record stores the same kind of information in the right place.',
+        tfStatement: 'A database field stores one specific type of data, such as Name or Email, in a column.',
+        tfAnswer: true,
+        tfExplain: 'True! Each column in a database table is a field dedicated to one category of information.',
+        blankSentence: 'In a student table, the "Email" column is an example of a ______.',
+        blankOptions: ['Database Field', 'Operator', 'Worksheet'],
+        checkQuestion: 'What does a database field represent in a table?',
+        checkOptions: [
+          'A column for one specific type of information',
+          'A mathematical symbol like + or *',
+          'A single tab at the bottom of a file'
+        ],
+        checkCorrect: 0,
+        checkFeedbackCorrect: 'Great job! A database field is a column for one specific type of information.',
+        checkFeedbackWrong: 'Not quite! Think about a vertical column such as "Name" or "Email".',
+        svgThumb: `
+          <svg viewBox="0 0 220 130" class="w-full h-32">
+            <rect x="14" y="14" width="192" height="102" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+            <rect x="80" y="14" width="66" height="102" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2.5" rx="4"/>
+            <rect x="14" y="14" width="192" height="28" rx="8" fill="#F1F5F9" opacity="0.85"/>
+            <rect x="80" y="14" width="66" height="28" fill="#4F46E5" rx="4"/>
+            <text x="32" y="32" font-size="10" font-weight="700" fill="#475569">ID</text>
+            <text x="97" y="32" font-size="10" font-weight="700" fill="#FFFFFF">Name</text>
+            <text x="158" y="32" font-size="10" font-weight="700" fill="#475569">Major</text>
+            <text x="32" y="60" font-size="10" font-family="monospace" fill="#64748B">101</text>
+            <text x="95" y="60" font-size="10" font-weight="700" fill="#312E81">Maya</text>
+            <text x="158" y="60" font-size="10" fill="#64748B">IT</text>
+            <text x="32" y="83" font-size="10" font-family="monospace" fill="#64748B">102</text>
+            <text x="95" y="83" font-size="10" font-weight="700" fill="#312E81">Liam</text>
+            <text x="158" y="83" font-size="10" fill="#64748B">CS</text>
+            <text x="32" y="106" font-size="10" font-family="monospace" fill="#64748B">103</text>
+            <text x="95" y="106" font-size="10" font-weight="700" fill="#312E81">Zeynep</text>
+            <text x="158" y="106" font-size="10" fill="#64748B">MIS</text>
+          </svg>`
+      },
+      {
+        id: 'database',
+        word: 'Database',
+        category: 'database',
+        categoryLabel: 'Database',
+        clue: 'How do apps store thousands of connected records safely?',
+        definition: 'A database is a structured collection of related information stored so a computer can easily search and manage it.',
+        example: 'Your university uses a database to store student profiles, course lists, and exam grades all connected together.',
+        useful: 'Databases let organizations store huge amounts of data, keep it accurate, and find any record in milliseconds.',
+        tfStatement: 'A database is a structured collection of related information that can be managed and searched easily.',
+        tfAnswer: true,
+        tfExplain: 'True! Databases organize connected tables so large collections of information stay accurate and searchable.',
+        blankSentence: 'A university stores connected student, course, and grade records inside a ______.',
+        blankOptions: ['Database', 'Operator', 'Formula'],
+        checkQuestion: 'Why do large organizations use a database?',
+        checkOptions: [
+          'To store, connect, and manage large amounts of related data',
+          'Only to add two numbers like 5 + 3',
+          'To change the font color of a single title'
+        ],
+        checkCorrect: 0,
+        checkFeedbackCorrect: 'Spot on! A database stores and connects large collections of related information.',
+        checkFeedbackWrong: 'Try again! Think about how a university connects Students, Courses, and Grades.',
+        svgThumb: `
+          <svg viewBox="0 0 220 130" class="w-full h-32">
+            <rect x="16" y="18" width="76" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"/>
+            <text x="28" y="37" font-size="10" font-weight="700" fill="#312E81">Students</text>
+            <line x1="24" y1="45" x2="82" y2="45" stroke="#A5B4FC" stroke-width="2"/>
+            <line x1="24" y1="53" x2="68" y2="53" stroke="#C7D2FE" stroke-width="2"/>
+
+            <rect x="128" y="18" width="76" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"/>
+            <text x="142" y="37" font-size="10" font-weight="700" fill="#312E81">Courses</text>
+            <line x1="136" y1="45" x2="194" y2="45" stroke="#A5B4FC" stroke-width="2"/>
+            <line x1="136" y1="53" x2="180" y2="53" stroke="#C7D2FE" stroke-width="2"/>
+
+            <rect x="72" y="76" width="76" height="42" rx="8" fill="#4F46E5"/>
+            <text x="88" y="96" font-size="10" font-weight="700" fill="#FFFFFF">Grades</text>
+            <line x1="82" y1="104" x2="138" y2="104" stroke="#A5B4FC" stroke-width="2"/>
+
+            <path d="M54 62 L92 76" stroke="#4F46E5" stroke-width="2" stroke-dasharray="3 2"/>
+            <path d="M166 62 L128 76" stroke="#4F46E5" stroke-width="2" stroke-dasharray="3 2"/>
+            <circle cx="92" cy="76" r="3" fill="#4F46E5"/>
+            <circle cx="128" cy="76" r="3" fill="#4F46E5"/>
+          </svg>`
+      },
+      {
+        id: 'formula',
+        word: 'Formula',
+        category: 'spreadsheet',
+        categoryLabel: 'Spreadsheet',
+        clue: 'How do you tell a spreadsheet to calculate an answer starting with "="?',
+        definition: 'A formula is an expression you write in a cell—usually starting with =—to calculate a value.',
+        example: 'If A1 is your midterm score (40) and B1 is your final score (50), writing =A1+B1 calculates your total (90).',
+        useful: 'When a number in A1 or B1 changes, the formula automatically updates the answer for you.',
+        tfStatement: 'In a spreadsheet, a formula usually begins with an equals sign (=), such as =A1+B1.',
+        tfAnswer: true,
+        tfExplain: 'True! The equals sign (=) tells the spreadsheet to calculate the expression.',
+        blankSentence: 'To add cell A1 and cell B1 together, you type the ______ =A1+B1.',
+        blankOptions: ['Formula', 'Database', 'Sort'],
+        checkQuestion: 'What happens if you change the number in A1 when C1 has =A1+B1?',
+        checkOptions: [
+          'Cell C1 automatically updates with the new total',
+          'The spreadsheet deletes cell B1',
+          'Nothing changes until you buy new software'
+        ],
+        checkCorrect: 0,
+        checkFeedbackCorrect: 'Yes! Formulas automatically recalculate whenever your input cells change.',
+        checkFeedbackWrong: 'Not quite! Remember that formulas stay connected to the cells they reference.',
+        svgThumb: `
+          <svg viewBox="0 0 220 130" class="w-full h-32">
+            <rect x="16" y="16" width="188" height="30" rx="8" fill="#0F172A"/>
+            <text x="28" y="35" font-size="12" font-family="monospace" font-weight="700" fill="#34D399">fx  =A1+B1</text>
+            <rect x="16" y="58" width="54" height="52" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+            <text x="35" y="74" font-size="9" font-family="monospace" fill="#64748B">A1</text>
+            <text x="32" y="96" font-size="16" font-family="monospace" font-weight="700" fill="#0F172A">40</text>
+            <text x="77" y="92" font-size="18" font-weight="700" fill="#2563EB">+</text>
+            <rect x="92" y="58" width="54" height="52" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+            <text x="111" y="74" font-size="9" font-family="monospace" fill="#64748B">B1</text>
+            <text x="108" y="96" font-size="16" font-family="monospace" font-weight="700" fill="#0F172A">50</text>
+            <text x="150" y="92" font-size="16" font-weight="700" fill="#059669">=</text>
+            <rect x="164" y="58" width="42" height="52" rx="8" fill="#ECFDF5" stroke="#059669" stroke-width="2"/>
+            <text x="171" y="93" font-size="15" font-family="monospace" font-weight="700" fill="#059669">90</text>
+          </svg>`
+      },
+      {
+        id: 'function',
+        word: 'Function',
+        category: 'spreadsheet',
+        categoryLabel: 'Spreadsheet',
+        clue: 'What built-in shortcut adds 100 numbers in one second?',
+        definition: 'A function is a built-in, named command in a spreadsheet—like SUM or AVERAGE—that performs a calculation automatically.',
+        example: 'Instead of typing =A1+A2+A3+A4+A5, you can simply write =SUM(A1:A5) to add all five cells at once.',
+        useful: 'Functions save time and prevent typing mistakes when working with long lists of numbers.',
+        tfStatement: '=SUM(A1:A5) is an example of a spreadsheet function.',
+        tfAnswer: true,
+        tfExplain: 'True! SUM is a built-in function that adds a whole range of cells automatically.',
+        blankSentence: 'Writing =SUM(A1:A5) uses a built-in ______ to add five cells automatically.',
+        blankOptions: ['Function', 'Table', 'Cell'],
+        checkQuestion: 'Why is =SUM(A1:A5) called a function?',
+        checkOptions: [
+          'It is a built-in command that performs a calculation automatically',
+          'It is a single empty box in a grid',
+          'It sorts names from A to Z'
+        ],
+        checkCorrect: 0,
+        checkFeedbackCorrect: 'Awesome! A function is a built-in shortcut command like SUM or AVERAGE.',
+        checkFeedbackWrong: 'Not quite! Think of SUM as a ready-made tool inside the spreadsheet.',
+        svgThumb: `
+          <svg viewBox="0 0 220 130" class="w-full h-32">
+            <rect x="16" y="14" width="188" height="28" rx="8" fill="#059669"/>
+            <text x="28" y="32" font-size="12" font-family="monospace" font-weight="700" fill="#FFFFFF">=SUM(A1:A5)</text>
+            <rect x="16" y="50" width="90" height="68" rx="8" fill="#ECFDF5" stroke="#10B981" stroke-width="2"/>
+            <text x="28" y="67" font-size="10" font-family="monospace" fill="#065F46">A1: 10</text>
+            <text x="28" y="80" font-size="10" font-family="monospace" fill="#065F46">A2: 20</text>
+            <text x="28" y="93" font-size="10" font-family="monospace" fill="#065F46">A3: 15</text>
+            <text x="28" y="106" font-size="10" font-family="monospace" fill="#065F46">A4: 25  A5: 30</text>
+            <path d="M112 84 L134 84" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
+            <polygon points="134,79 144,84 134,89" fill="#059669"/>
+            <rect x="148" y="60" width="56" height="48" rx="10" fill="#FFFFFF" stroke="#059669" stroke-width="2.5"/>
+            <text x="159" y="78" font-size="9" font-weight="700" fill="#059669">TOTAL</text>
+            <text x="158" y="98" font-size="16" font-family="monospace" font-weight="700" fill="#0F172A">100</text>
+          </svg>`
+      },
+      {
+        id: 'operator',
+        word: 'Operator',
+        category: 'both',
+        categoryLabel: 'Shared Concept',
+        clue: 'What are symbols like +, -, *, and / called?',
+        definition: 'An operator is a symbol—such as +, -, *, or /—that tells the computer what math or comparison action to perform.',
+        example: 'In the formula =12 * 4, the asterisk (*) is the operator that tells the spreadsheet to multiply 12 by 4.',
+        useful: 'Operators are the action signs inside formulas and queries that let us calculate and compare data.',
+        tfStatement: 'In spreadsheets, the * symbol is an operator used for multiplication.',
+        tfAnswer: true,
+        tfExplain: 'True! Spreadsheets use + (add), - (subtract), * (multiply), and / (divide) as math operators.',
+        blankSentence: 'Symbols like +, -, *, and / are called mathematical ______.',
+        blankOptions: ['Operators', 'Worksheets', 'Tables'],
+        checkQuestion: 'Which symbol is used as the multiplication operator in a spreadsheet?',
+        checkOptions: ['* (asterisk)', '# (hash)', '@ (at sign)'],
+        checkCorrect: 0,
+        checkFeedbackCorrect: 'Correct! The asterisk (*) is the multiplication operator.',
+        checkFeedbackWrong: 'Look closely at the four math symbols: +, -, *, and /.',
+        svgThumb: `
+          <svg viewBox="0 0 220 130" class="w-full h-32">
+            <rect x="22" y="18" width="80" height="42" rx="10" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/>
+            <text x="54" y="47" font-size="24" font-family="monospace" font-weight="700" fill="#1E40AF">+</text>
+            <rect x="118" y="18" width="80" height="42" rx="10" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+            <text x="150" y="47" font-size="24" font-family="monospace" font-weight="700" fill="#B45309">-</text>
+            <rect x="22" y="70" width="80" height="42" rx="10" fill="#ECFDF5" stroke="#059669" stroke-width="2"/>
+            <text x="54" y="102" font-size="24" font-family="monospace" font-weight="700" fill="#047857">*</text>
+            <rect x="118" y="70" width="80" height="42" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"/>
+            <text x="150" y="99" font-size="24" font-family="monospace" font-weight="700" fill="#3730A3">/</text>
+          </svg>`
+      },
+      {
+        id: 'query',
+        word: 'Query',
+        category: 'database',
+        categoryLabel: 'Database',
+        clue: 'How do you ask a database to find only the records you need?',
+        definition: 'A query is a search or request you send to a database to retrieve specific matching information.',
+        example: 'When you search a library database for "Books published in 2025", that search request is a query.',
+        useful: 'Queries let you find exact answers in seconds without scrolling through thousands of rows.',
+        tfStatement: 'A query is a request that retrieves specific matching information from a database.',
+        tfAnswer: true,
+        tfExplain: 'True! You use a query to ask a database for only the records that match your condition.',
+        blankSentence: 'To find only students with a score above 85, you run a ______ on the database.',
+        blankOptions: ['Query', 'Cell', 'Worksheet'],
+        checkQuestion: 'What does a query do in a database?',
+        checkOptions: [
+          'It searches and retrieves only the records that match a condition',
+          'It draws a border around a spreadsheet',
+          'It creates a new empty worksheet tab'
+        ],
+        checkCorrect: 0,
+        checkFeedbackCorrect: 'Exactly right! A query asks the database for specific matching records.',
+        checkFeedbackWrong: 'Not quite! Think of a query as a smart question sent to a database.',
+        svgThumb: `
+          <svg viewBox="0 0 220 130" class="w-full h-32">
+            <rect x="16" y="16" width="188" height="32" rx="16" fill="#FFFFFF" stroke="#4F46E5" stroke-width="2.5"/>
+            <circle cx="34" cy="32" r="6" fill="none" stroke="#4F46E5" stroke-width="2"/>
+            <line x1="39" y1="37" x2="43" y2="41" stroke="#4F46E5" stroke-width="2"/>
+            <text x="52" y="36" font-size="11" font-family="monospace" font-weight="700" fill="#312E81">Major = "IT"</text>
+            <rect x="24" y="60" width="172" height="22" rx="6" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+            <text x="34" y="75" font-size="10" font-weight="700" fill="#312E81">✓ 101 | Maya | IT</text>
+            <rect x="24" y="88" width="172" height="22" rx="6" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+            <text x="34" y="103" font-size="10" font-weight="700" fill="#312E81">✓ 104 | Emre | IT</text>
+          </svg>`
+      },
+      {
+        id: 'sort',
+        word: 'Sort',
+        category: 'both',
+        categoryLabel: 'Shared Concept',
+        clue: 'How do you put a messy list into A–Z or smallest-to-largest order?',
+        definition: 'To sort means to arrange data in a clear order, such as alphabetically (A to Z) or numerically (smallest to largest).',
+        example: 'Before taking attendance, a teacher sorts the student list from A to Z so names are easy to find.',
+        useful: 'Sorting makes messy data easy to read and helps you spot the highest, lowest, or first item right away.',
+        tfStatement: 'Sorting arranges data in a specific order, such as A to Z or highest to lowest.',
+        tfAnswer: true,
+        tfExplain: 'True! Sorting organizes rows alphabetically or numerically.',
+        blankSentence: 'Arranging a list of student names from A to Z is called ______.',
+        blankOptions: ['Sort', 'Formula', 'Cell'],
+        checkQuestion: 'Which of these is an example of sorting?',
+        checkOptions: [
+          'Arranging prices from lowest ($5) to highest ($50)',
+          'Typing a new email address into a cell',
+          'Adding two numbers with ='
+        ],
+        checkCorrect: 0,
+        checkFeedbackCorrect: 'Well done! Ordering numbers from lowest to highest is sorting.',
+        checkFeedbackWrong: 'Try again! Remember sorting is about putting items in order (A–Z or 1–10).',
+        svgThumb: `
+          <svg viewBox="0 0 220 130" class="w-full h-32">
+            <rect x="20" y="16" width="110" height="26" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+            <text x="34" y="33" font-size="11" font-weight="700" fill="#0F172A">A — Ali</text>
+            <rect x="20" y="50" width="110" height="26" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+            <text x="34" y="67" font-size="11" font-weight="700" fill="#0F172A">B — Berk</text>
+            <rect x="20" y="84" width="110" height="26" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+            <text x="34" y="101" font-size="11" font-weight="700" fill="#0F172A">C — Can</text>
+            <rect x="148" y="28" width="52" height="72" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+            <text x="163" y="54" font-size="13" font-weight="800" fill="#2563EB">A</text>
+            <path d="M174 60 L174 82" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round"/>
+            <polygon points="169,78 174,86 179,78" fill="#2563EB"/>
+            <text x="163" y="96" font-size="13" font-weight="800" fill="#2563EB">Z</text>
+          </svg>`
+      },
+      {
+        id: 'spreadsheets',
+        word: 'Spreadsheets',
+        category: 'spreadsheet',
+        categoryLabel: 'Spreadsheet',
+        clue: 'What digital tool turns rows and columns into a live calculator?',
+        definition: 'A spreadsheet is a computer program—like Excel or Google Sheets—that organizes data in a grid of rows and columns for calculations.',
+        example: 'A club treasurer uses a spreadsheet to list ticket sales, subtract expenses, and calculate the remaining budget.',
+        useful: 'Spreadsheets make it easy to track numbers, test "what-if" budgets, and create quick charts.',
+        tfStatement: 'A spreadsheet is mainly used for organizing small data lists and performing calculations.',
+        tfAnswer: true,
+        tfExplain: 'True! Spreadsheets excel at math, budgets, and grid-based lists.',
+        blankSentence: 'Excel and Google Sheets are popular examples of ______.',
+        blankOptions: ['Spreadsheets', 'Queries', 'Database Fields'],
+        checkQuestion: 'What is a spreadsheet best designed to do?',
+        checkOptions: [
+          'Organize data in a grid and perform calculations',
+          'Store millions of connected bank accounts on a server',
+          'Edit photographs and videos'
+        ],
+        checkCorrect: 0,
+        checkFeedbackCorrect: 'Great! Spreadsheets organize grid data and perform fast calculations.',
+        checkFeedbackWrong: 'Not quite! Think of rows, columns, and live math formulas.',
+        svgThumb: `
+          <svg viewBox="0 0 220 130" class="w-full h-32">
+            <rect x="14" y="12" width="192" height="106" rx="10" fill="#FFFFFF" stroke="#059669" stroke-width="2"/>
+            <rect x="14" y="12" width="192" height="22" rx="8" fill="#059669"/>
+            <text x="26" y="27" font-size="10" font-weight="700" fill="#FFFFFF">Budget.xlsx  •  fx =SUM(B2:B3)</text>
+            <line x1="14" y1="56" x2="206" y2="56" stroke="#E2E8F0"/>
+            <line x1="14" y1="78" x2="206" y2="78" stroke="#E2E8F0"/>
+            <line x1="110" y1="34" x2="110" y2="118" stroke="#E2E8F0"/>
+            <text x="26" y="49" font-size="10" font-weight="700" fill="#475569">Expense</text>
+            <text x="124" y="49" font-size="10" font-weight="700" fill="#475569">Amount</text>
+            <text x="26" y="71" font-size="10" fill="#0F172A">Snacks</text>
+            <text x="124" y="71" font-size="10" font-family="monospace" fill="#0F172A">$25</text>
+            <text x="26" y="93" font-size="10" fill="#0F172A">Drinks</text>
+            <text x="124" y="93" font-size="10" font-family="monospace" fill="#0F172A">$15</text>
+            <rect x="14" y="99" width="192" height="19" fill="#ECFDF5"/>
+            <text x="26" y="112" font-size="10" font-weight="700" fill="#065F46">Total</text>
+            <text x="124" y="112" font-size="10" font-family="monospace" font-weight="700" fill="#059669">$40</text>
+          </svg>`
+      },
+      {
+        id: 'table',
+        word: 'Table',
+        category: 'both',
+        categoryLabel: 'Shared Concept',
+        clue: 'How do both spreadsheets and databases structure rows and columns?',
+        definition: 'A table is a structured arrangement of information organized into horizontal rows and vertical columns.',
+        example: 'A class schedule with Days as columns and Class Hours as rows is an everyday table.',
+        useful: 'Tables turn messy paragraphs into a clean structure that both humans and computers can read instantly.',
+        tfStatement: 'A table organizes structured information into rows and columns.',
+        tfAnswer: true,
+        tfExplain: 'True! Tables use rows (across) and columns (down) to keep information structured.',
+        blankSentence: 'Structured information organized into horizontal rows and vertical columns is called a ______.',
+        blankOptions: ['Table', 'Operator', 'Function'],
+        checkQuestion: 'What two parts make up every table?',
+        checkOptions: [
+          'Rows and columns',
+          'Tabs and formulas only',
+          'Queries and passwords'
+        ],
+        checkCorrect: 0,
+        checkFeedbackCorrect: 'Correct! Every table is built from rows and columns.',
+        checkFeedbackWrong: 'Not quite! Look at the horizontal lines (rows) and vertical lines (columns).',
+        svgThumb: `
+          <svg viewBox="0 0 220 130" class="w-full h-32">
+            <rect x="16" y="16" width="188" height="98" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="2"/>
+            <rect x="16" y="16" width="188" height="24" rx="6" fill="#0F172A"/>
+            <text x="28" y="32" font-size="10" font-weight="700" fill="#FFFFFF">City</text>
+            <text x="95" y="32" font-size="10" font-weight="700" fill="#FFFFFF">Temp</text>
+            <text x="155" y="32" font-size="10" font-weight="700" fill="#FFFFFF">Sky</text>
+            <line x1="82" y1="16" x2="82" y2="114" stroke="#CBD5E1"/>
+            <line x1="142" y1="16" x2="142" y2="114" stroke="#CBD5E1"/>
+            <line x1="16" y1="64" x2="204" y2="64" stroke="#CBD5E1"/>
+            <line x1="16" y1="88" x2="204" y2="88" stroke="#CBD5E1"/>
+            <text x="28" y="56" font-size="10" fill="#0F172A">Izmir</text><text x="95" y="56" font-size="10" font-family="monospace" fill="#0F172A">22°C</text><text x="155" y="56" font-size="10" fill="#D97706">Sunny</text>
+            <text x="28" y="80" font-size="10" fill="#0F172A">Ankara</text><text x="95" y="80" font-size="10" font-family="monospace" fill="#0F172A">14°C</text><text x="155" y="80" font-size="10" fill="#2563EB">Clear</text>
+            <text x="28" y="105" font-size="10" fill="#0F172A">Istanbul</text><text x="95" y="105" font-size="10" font-family="monospace" fill="#0F172A">17°C</text><text x="155" y="105" font-size="10" fill="#64748B">Cloudy</text>
+          </svg>`
+      },
+      {
+        id: 'worksheet',
+        word: 'Worksheet',
+        category: 'spreadsheet',
+        categoryLabel: 'Spreadsheet',
+        clue: 'What is a single page tab inside a spreadsheet file called?',
+        definition: 'A worksheet is one single working sheet (or page tab) inside a spreadsheet workbook file.',
+        example: 'Your 2026 Budget file can have three worksheets at the bottom: "January", "February", and "March".',
+        useful: 'Worksheets let you separate different months, classes, or topics while keeping everything in one neat file.',
+        tfStatement: 'A spreadsheet file can contain multiple worksheets, shown as tabs at the bottom.',
+        tfAnswer: true,
+        tfExplain: 'True! A workbook file can hold many individual worksheet tabs like Sheet1, Sheet2, or January.',
+        blankSentence: 'A single working page tab inside a spreadsheet workbook is called a ______.',
+        blankOptions: ['Worksheet', 'Database', 'Query'],
+        checkQuestion: 'Where do you usually switch between worksheets in a spreadsheet?',
+        checkOptions: [
+          'Using the page tabs at the bottom of the screen',
+          'Inside a database query bar',
+          'By typing a multiplication operator'
+        ],
+        checkCorrect: 0,
+        checkFeedbackCorrect: 'Spot on! Those clickable tabs at the bottom are individual worksheets.',
+        checkFeedbackWrong: 'Not quite! Look at the tabs at the bottom of a spreadsheet window.',
+        svgThumb: `
+          <svg viewBox="0 0 220 130" class="w-full h-32">
+            <rect x="16" y="14" width="188" height="80" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+            <text x="30" y="38" font-size="11" font-weight="700" fill="#0F172A">January Expenses</text>
+            <line x1="30" y1="50" x2="184" y2="50" stroke="#E2E8F0" stroke-width="2"/>
+            <line x1="30" y1="65" x2="160" y2="65" stroke="#E2E8F0" stroke-width="2"/>
+            <line x1="30" y1="80" x2="140" y2="80" stroke="#E2E8F0" stroke-width="2"/>
+            <!-- Bottom tabs -->
+            <rect x="20" y="94" width="54" height="22" rx="5" fill="#2563EB"/>
+            <text x="29" y="109" font-size="9" font-weight="700" fill="#FFFFFF">January</text>
+            <rect x="78" y="94" width="56" height="22" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+            <text x="86" y="109" font-size="9" font-weight="600" fill="#475569">February</text>
+            <rect x="138" y="94" width="50" height="22" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+            <text x="148" y="109" font-size="9" font-weight="600" fill="#475569">March</text>
+          </svg>`
+      }
+    ];
+
+    // =========================================================================
+    // STATE MANAGEMENT
+    // =========================================================================
+    const state = {
+      masteredIds: new Set(),
+      explorerFilter: 'all',
+      currentModalIndex: 0,
+      modalCheckAnswered: {},
+      activeGame: 'match',
+      // Demo states
+      demoState: {
+        selectedCell: 'B2',
+        selectedField: 'Name',
+        selectedStudentId: 101,
+        formulaA1: 40,
+        formulaB1: 50,
+        sumRun: false,
+        sumNums: [10, 20, 15, 25, 30],
+        operator: '+',
+        queryFilter: 'all',
+        sortMode: 'none',
+        sheetRowDone: [true, false, true],
+        tableHighlight: 'rows',
+        activeWorksheet: 'January'
+      }
+    };
+
+    try {
+      const saved = localStorage.getItem('ds_esp_mastered');
+      if (saved) JSON.parse(saved).forEach(id => state.masteredIds.add(id));
+    } catch (e) {}
+
+    function saveProgress() {
+      try {
+        localStorage.setItem('ds_esp_mastered', JSON.stringify([...state.masteredIds]));
+      } catch (e) {}
+      updateProgressUI();
+    }
+
+    function updateProgressUI() {
+      const count = state.masteredIds.size;
+      const pct = Math.round((count / VOCAB_DATA.length) * 100);
+      document.getElementById('nav-progress-count').textContent = count;
+      document.getElementById('hero-progress-count').textContent = count;
+      document.getElementById('hero-progress-bar').style.width = `${pct}%`;
+
+      const dotsEl = document.getElementById('hero-progress-dots');
+      dotsEl.innerHTML = VOCAB_DATA.map((item, idx) => {
+        const done = state.masteredIds.has(item.id);
+        return `<button type="button" onclick="openModal(${idx})" title="${item.word}" class="h-2.5 flex-1 rounded-full transition-all ${done ? 'bg-emerald-500' : 'bg-slate-200 hover:bg-blue-300'}"></button>`;
+      }).join('');
+    }
+
+    // =========================================================================
+    // SECTION B — VOCABULARY EXPLORER RENDER
+    // =========================================================================
+    function renderExplorer() {
+      const grid = document.getElementById('vocab-grid');
+      const items = VOCAB_DATA.filter(item => state.explorerFilter === 'all' || item.category === state.explorerFilter);
+
+      grid.innerHTML = items.map(item => {
+        const realIdx = VOCAB_DATA.findIndex(v => v.id === item.id);
+        const isMastered = state.masteredIds.has(item.id);
+        const badgeClass = item.category === 'spreadsheet'
+          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+          : item.category === 'database'
+            ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+            : 'bg-blue-50 text-blue-700 border-blue-200';
+
+        return `
+          <button type="button" onclick="openModal(${realIdx})" class="vocab-card text-left bg-white rounded-3xl border border-borderwarm p-5 flex flex-col justify-between group focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${badgeClass}">${item.categoryLabel}</span>
+                ${isMastered
+                  ? `<span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">✓ Learned</span>`
+                  : `<span class="text-xs font-mono text-slate-400">#${realIdx + 1}</span>`
+                }
+              </div>
+              <div class="bg-canvas rounded-2xl border border-slate-100 p-3 mb-4 flex items-center justify-center">
+                ${item.svgThumb}
+              </div>
+              <h3 class="text-xl font-display font-extrabold text-slate-900 group-hover:text-blue-700 transition-colors">${item.word}</h3>
+              <p class="text-sm text-slate-600 mt-1.5 leading-snug">${item.clue}</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-sm font-bold text-blue-600">
+              <span>Explore Lesson</span>
+              <span class="group-hover:translate-x-1 transition-transform">→</span>
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    document.querySelectorAll('.explorer-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.explorerFilter = btn.dataset.filter;
+        document.querySelectorAll('.explorer-filter-btn').forEach(b => {
+          b.className = 'explorer-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-white border border-borderwarm text-slate-700 hover:bg-slate-100 transition-colors';
+        });
+        btn.className = 'explorer-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-900 text-white transition-colors';
+        renderExplorer();
+      });
+    });
+
+    // =========================================================================
+    // SECTION C — INDIVIDUAL INTERACTIVE LEARNING SCREENS (MODAL)
+    // =========================================================================
+    function openModal(index) {
+      state.currentModalIndex = index;
+      const modal = document.getElementById('learning-modal');
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      renderModalContent();
+    }
+
+    function closeModal() {
+      document.getElementById('learning-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function renderModalContent() {
+      const idx = state.currentModalIndex;
+      const item = VOCAB_DATA[idx];
+      const isMastered = state.masteredIds.has(item.id);
+
+      document.getElementById('modal-word-counter').textContent = `${idx + 1} / ${VOCAB_DATA.length}`;
+      const badge = document.getElementById('modal-category-badge');
+      badge.textContent = item.categoryLabel;
+      badge.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ' + (
+        item.category === 'spreadsheet'
+          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+          : item.category === 'database'
+            ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+            : 'bg-blue-50 text-blue-700 border-blue-200'
+      );
+
+      const masteredPill = document.getElementById('modal-mastered-pill');
+      if (isMastered) masteredPill.classList.remove('hidden');
+      else masteredPill.classList.add('hidden');
+
+      document.getElementById('modal-prev-btn').disabled = idx === 0;
+      document.getElementById('modal-prev-btn').classList.toggle('opacity-40', idx === 0);
+      document.getElementById('modal-next-btn').disabled = idx === VOCAB_DATA.length - 1;
+      document.getElementById('modal-next-btn').classList.toggle('opacity-40', idx === VOCAB_DATA.length - 1);
+
+      const body = document.getElementById('modal-body');
+      body.scrollTop = 0;
+
+      body.innerHTML = `
+        <!-- 1. THE WORD & 2. VISUAL EXPLANATION -->
+        <div class="grid lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-7 space-y-4">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Vocabulary Term</span>
+              <h2 class="text-4xl sm:text-5xl font-display font-extrabold text-slate-900 tracking-tight mt-1">${item.word.toUpperCase()}</h2>
+            </div>
+
+            <!-- 3. SIMPLE ENGLISH DEFINITION -->
+            <div class="p-5 rounded-2xl bg-blue-50/70 border border-blue-100">
+              <div class="text-xs font-bold uppercase tracking-wider text-blue-800 mb-1">Simple Definition</div>
+              <p class="text-lg sm:text-xl font-medium text-slate-900 leading-relaxed">${item.definition}</p>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 bg-canvas rounded-3xl border border-borderwarm p-5 flex flex-col items-center justify-center">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Visual Explanation</div>
+            <div class="w-full max-w-xs">${item.svgThumb}</div>
+          </div>
+        </div>
+
+        <!-- 4. REAL-LIFE EXAMPLE & 5. WHY IS IT USEFUL? -->
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div class="p-5 rounded-2xl bg-canvas border border-borderwarm">
+            <div class="text-xs font-bold uppercase tracking-wider text-amber-700 mb-1.5">Real-Life Example</div>
+            <p class="text-base text-slate-700 leading-relaxed">${item.example}</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-canvas border border-borderwarm">
+            <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1.5">Why Is It Useful?</div>
+            <p class="text-base text-slate-700 leading-relaxed">${item.useful}</p>
+          </div>
+        </div>
+
+        <!-- 6. INTERACTIVE DEMONSTRATION -->
+        <div class="rounded-3xl border-2 border-blue-200 bg-white p-5 sm:p-7 shadow-sm">
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-blue-700">Interactive Demonstration</span>
+              <h3 class="text-xl font-display font-bold text-slate-900">Try It Yourself!</h3>
+            </div>
+            <span class="text-xs font-mono bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-200">Hands-On Lab</span>
+          </div>
+          <div id="interactive-demo-container"></div>
+        </div>
+
+        <!-- 7. MINI KNOWLEDGE CHECK -->
+        <div id="mini-check-box" class="rounded-3xl border border-borderwarm bg-canvas p-5 sm:p-7">
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Mini Knowledge Check</div>
+          <h3 class="text-xl font-display font-bold text-slate-900 mb-4">${item.checkQuestion}</h3>
+          <div class="grid gap-3" id="mini-check-options">
+            ${item.checkOptions.map((opt, oIdx) => `
+              <button type="button" onclick="answerMiniCheck('${item.id}', ${oIdx})" class="mini-opt-btn text-left p-4 rounded-2xl bg-white border-2 border-slate-200 hover:border-blue-400 font-medium text-slate-800 transition-all flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-slate-100 text-slate-700 font-mono font-bold text-sm flex items-center justify-center shrink-0">${String.fromCharCode(65 + oIdx)}</span>
+                <span>${opt}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div id="mini-check-feedback" class="hidden mt-4 p-4 rounded-2xl font-medium text-base"></div>
+        </div>
+      `;
+
+      renderInteractiveDemo(item.id);
+    }
+
+    function answerMiniCheck(wordId, chosenIdx) {
+      const item = VOCAB_DATA.find(v => v.id === wordId);
+      const feedbackEl = document.getElementById('mini-check-feedback');
+      const btns = document.querySelectorAll('.mini-opt-btn');
+
+      btns.forEach((b, i) => {
+        b.classList.remove('border-emerald-500', 'bg-emerald-50', 'border-rose-400', 'bg-rose-50');
+        if (i === chosenIdx) {
+          if (chosenIdx === item.checkCorrect) {
+            b.classList.add('border-emerald-500', 'bg-emerald-50');
+          } else {
+            b.classList.add('border-rose-400', 'bg-rose-50');
+          }
+        }
+      });
+
+      feedbackEl.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-900', 'bg-rose-100', 'text-rose-900', 'animate-celebrate');
+      if (chosenIdx === item.checkCorrect) {
+        AudioFX.success();
+        feedbackEl.classList.add('bg-emerald-100', 'text-emerald-900', 'animate-celebrate');
+        feedbackEl.innerHTML = `<strong>✓ ${item.checkFeedbackCorrect}</strong>`;
+        state.masteredIds.add(item.id);
+        saveProgress();
+        renderExplorer();
+        document.getElementById('modal-mastered-pill').classList.remove('hidden');
+      } else {
+        AudioFX.error();
+        feedbackEl.classList.add('bg-rose-100', 'text-rose-900');
+        feedbackEl.innerHTML = `<strong>✕ ${item.checkFeedbackWrong}</strong>`;
+      }
+    }
+
+    // =========================================================================
+    // 11 FUNCTIONAL INTERACTIVE DEMONSTRATIONS
+    // =========================================================================
+    function renderInteractiveDemo(id) {
+      const container = document.getElementById('interactive-demo-container');
+      const d = state.demoState;
+
+      if (id === 'cell') {
+        const gridData = {
+          A1: 'Name', B1: 'Quiz 1', C1: 'Quiz 2',
+          A2: 'Maya', B2: '88', C2: '94',
+          A3: 'Liam', B3: '76', C3: '85'
+        };
+        const sel = d.selectedCell;
+        const selCol = sel[0];
+        const selRow = sel[1];
+        container.innerHTML = `
+          <p class="text-sm text-slate-600 mb-3">Click any cell in the spreadsheet below to inspect its exact address (like <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded">B2</code>). Try finding <strong>Liam's Quiz 2 score (C3)</strong>!</p>
+          <div class="flex flex-wrap items-center gap-3 mb-3 bg-slate-900 text-white px-4 py-2.5 rounded-xl font-mono text-sm">
+            <span class="bg-blue-600 px-2.5 py-0.5 rounded font-bold">${sel}</span>
+            <span class="text-slate-400">Value:</span>
+            <span class="text-emerald-300 font-bold">${gridData[sel]}</span>
+            ${sel === 'C3' ? '<span class="ml-auto text-xs bg-emerald-500 text-white px-2.5 py-1 rounded-full font-sans font-bold">✓ You found C3!</span>' : ''}
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse sheet-grid rounded-xl overflow-hidden">
+              <thead>
+                <tr class="bg-slate-100 font-mono text-slate-600">
+                  <th class="p-2.5 w-12"></th>
+                  ${['A', 'B', 'C'].map(col => `<th class="p-2.5 ${selCol === col ? 'bg-blue-100 text-blue-800 font-bold' : ''}">${col}</th>`).join('')}
+                </tr>
+              </thead>
+              <tbody>
+                ${[1, 2, 3].map(row => `
+                  <tr>
+                    <th class="p-2.5 bg-slate-100 font-mono ${selRow == row ? 'bg-blue-100 text-blue-800 font-bold' : 'text-slate-500'}">${row}</th>
+                    ${['A', 'B', 'C'].map(col => {
+                      const addr = col + row;
+                      const active = sel === addr;
+                      return `<td class="p-0"><button type="button" onclick="state.demoState.selectedCell='${addr}'; renderInteractiveDemo('cell')" class="w-full p-3 text-left font-medium transition-colors ${active ? 'bg-blue-50 ring-2 ring-inset ring-blue-600 text-blue-900 font-bold' : 'hover:bg-slate-50 text-slate-800'}">${gridData[addr]}</button></td>`;
+                    }).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>`;
+      }
+
+      else if (id === 'database-field') {
+        const fields = {
+          ID: { type: 'Number', desc: 'Stores a unique student ID number for every person.' },
+          Name: { type: 'Text', desc: 'Stores each student\'s full name.' },
+          Email: { type: 'Email Text', desc: 'Stores each student\'s university email address.' },
+          Major: { type: 'Text', desc: 'Stores the student\'s study department.' }
+        };
+        const rows = [
+          { ID: '101', Name: 'Maya Demir', Email: 'maya@uni.edu', Major: 'IT' },
+          { ID: '102', Name: 'Liam Kaya', Email: 'liam@uni.edu', Major: 'CS' },
+          { ID: '103', Name: 'Zeynep Ak', Email: 'zeynep@uni.edu', Major: 'MIS' }
+        ];
+        const sel = d.selectedField;
+        container.innerHTML = `
+          <p class="text-sm text-slate-600 mb-3">Click any column header (<strong>ID</strong>, <strong>Name</strong>, <strong>Email</strong>, or <strong>Major</strong>) to highlight that database field.</p>
+          <div class="mb-3 p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-sm text-indigo-900 flex flex-wrap items-center justify-between gap-2">
+            <span><strong>Selected Field:</strong> ${sel} <span class="font-mono text-xs bg-white px-2 py-0.5 rounded border border-indigo-200 ml-1">${fields[sel].type}</span></span>
+            <span>${fields[sel].desc}</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse border border-slate-200 rounded-xl overflow-hidden">
+              <thead>
+                <tr class="bg-slate-100">
+                  ${Object.keys(fields).map(f => `
+                    <th class="p-0 border border-slate-200">
+                      <button type="button" onclick="state.demoState.selectedField='${f}'; renderInteractiveDemo('database-field')" class="w-full p-3 text-left font-bold transition-colors ${sel === f ? 'bg-indigo-600 text-white' : 'hover:bg-indigo-50 text-slate-800'}">${f}</button>
+                    </th>
+                  `).join('')}
+                </tr>
+              </thead>
+              <tbody>
+                ${rows.map(r => `
+                  <tr>
+                    ${Object.keys(fields).map(f => `<td class="p-3 border border-slate-200 ${sel === f ? 'bg-indigo-50 font-semibold text-indigo-900' : 'text-slate-700'}">${r[f]}</td>`).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>`;
+      }
+
+      else if (id === 'database') {
+        const students = [
+          { id: 101, name: 'Maya', major: 'IT', course: 'DB101: Databases', grade: '94 (A)' },
+          { id: 102, name: 'Liam', major: 'CS', course: 'CS202: Algorithms', grade: '88 (B+)' },
+          { id: 103, name: 'Zeynep', major: 'MIS', course: 'IS105: Spreadsheets', grade: '96 (A)' }
+        ];
+        const sel = d.selectedStudentId;
+        const activeStudent = students.find(s => s.id === sel);
+        container.innerHTML = `
+          <p class="text-sm text-slate-600 mb-3">Click a student in the <strong>Students Table</strong> to see how a database connects related records in <strong>Courses</strong> and <strong>Grades</strong>.</p>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="rounded-2xl border border-indigo-200 p-3 bg-indigo-50/40">
+              <div class="text-xs font-bold uppercase text-indigo-800 mb-2">1. Students Table</div>
+              <div class="space-y-1.5">
+                ${students.map(s => `
+                  <button type="button" onclick="state.demoState.selectedStudentId=${s.id}; renderInteractiveDemo('database')" class="w-full text-left px-3 py-2 rounded-xl text-sm font-semibold transition-all ${s.id === sel ? 'bg-indigo-600 text-white shadow' : 'bg-white border border-slate-200 text-slate-800 hover:bg-indigo-50'}">
+                    #${s.id} — ${s.name} (${s.major})
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+            <div class="rounded-2xl border border-slate-200 p-4 bg-canvas flex flex-col justify-center">
+              <div class="text-xs font-bold uppercase text-slate-500 mb-1">2. Courses Table</div>
+              <div class="text-base font-bold text-indigo-900 bg-white p-3 rounded-xl border border-indigo-200">${activeStudent.course}</div>
+              <div class="text-xs text-slate-500 mt-2">Linked via Student #${activeStudent.id}</div>
+            </div>
+            <div class="rounded-2xl border border-slate-200 p-4 bg-canvas flex flex-col justify-center">
+              <div class="text-xs font-bold uppercase text-slate-500 mb-1">3. Grades Table</div>
+              <div class="text-base font-bold text-emerald-700 bg-white p-3 rounded-xl border border-emerald-200">${activeStudent.grade}</div>
+              <div class="text-xs text-slate-500 mt-2">Connected automatically!</div>
+            </div>
+          </div>`;
+      }
+
+      else if (id === 'formula') {
+        const a = d.formulaA1;
+        const b = d.formulaB1;
+        const total = a + b;
+        container.innerHTML = `
+          <p class="text-sm text-slate-600 mb-4">Adjust the numbers in <strong>A1</strong> and <strong>B1</strong> and watch how the formula <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded">=A1+B1</code> recalculates automatically.</p>
+          <div class="bg-slate-900 text-white px-4 py-2.5 rounded-xl font-mono text-sm mb-4 flex items-center gap-3">
+            <span class="text-emerald-400 font-bold">fx</span>
+            <span>=A1+B1</span>
+          </div>
+          <div class="grid sm:grid-cols-3 gap-4 items-center">
+            <div class="p-4 rounded-2xl bg-canvas border border-borderwarm">
+              <div class="text-xs font-mono text-slate-500 mb-1">Cell A1 (Midterm)</div>
+              <div class="flex items-center justify-between gap-2">
+                <button type="button" onclick="state.demoState.formulaA1=Math.max(0,state.demoState.formulaA1-5); renderInteractiveDemo('formula')" class="w-9 h-9 rounded-lg bg-white border border-slate-300 font-bold hover:bg-slate-100">-</button>
+                <span class="text-2xl font-mono font-bold text-slate-900">${a}</span>
+                <button type="button" onclick="state.demoState.formulaA1=Math.min(100,state.demoState.formulaA1+5); renderInteractiveDemo('formula')" class="w-9 h-9 rounded-lg bg-white border border-slate-300 font-bold hover:bg-slate-100">+</button>
+              </div>
+            </div>
+            <div class="p-4 rounded-2xl bg-canvas border border-borderwarm">
+              <div class="text-xs font-mono text-slate-500 mb-1">Cell B1 (Final)</div>
+              <div class="flex items-center justify-between gap-2">
+                <button type="button" onclick="state.demoState.formulaB1=Math.max(0,state.demoState.formulaB1-5); renderInteractiveDemo('formula')" class="w-9 h-9 rounded-lg bg-white border border-slate-300 font-bold hover:bg-slate-100">-</button>
+                <span class="text-2xl font-mono font-bold text-slate-900">${b}</span>
+                <button type="button" onclick="state.demoState.formulaB1=Math.min(100,state.demoState.formulaB1+5); renderInteractiveDemo('formula')" class="w-9 h-9 rounded-lg bg-white border border-slate-300 font-bold hover:bg-slate-100">+</button>
+              </div>
+            </div>
+            <div class="p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-400 text-center">
+              <div class="text-xs font-mono text-emerald-800 mb-1">Cell C1 (=A1+B1)</div>
+              <div class="text-3xl font-mono font-extrabold text-emerald-700">${total}</div>
+            </div>
+          </div>`;
+      }
+
+      else if (id === 'function') {
+        const total = d.sumNums.reduce((acc, n) => acc + n, 0);
+        container.innerHTML = `
+          <p class="text-sm text-slate-600 mb-4">Click <strong>Run =SUM(A1:A5)</strong> to see the function automatically add all five cells in one step.</p>
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <div class="flex-1 grid grid-cols-5 gap-2">
+              ${d.sumNums.map((n, i) => `
+                <div class="p-3 rounded-xl text-center border ${d.sumRun ? 'bg-emerald-50 border-emerald-400' : 'bg-canvas border-borderwarm'}">
+                  <div class="text-[11px] font-mono text-slate-500">A${i + 1}</div>
+                  <div class="text-lg font-mono font-bold text-slate-900 mt-1">${n}</div>
+                </div>
+              `).join('')}
+            </div>
+            <button type="button" onclick="state.demoState.sumRun=true; AudioFX.success(); renderInteractiveDemo('function')" class="px-5 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-mono font-bold text-sm shadow transition-colors shrink-0">
+              Run =SUM(A1:A5)
+            </button>
+            <div class="p-4 rounded-xl bg-slate-900 text-white text-center min-w-[110px]">
+              <div class="text-[11px] font-mono text-slate-400">Result</div>
+              <div class="text-2xl font-mono font-bold text-emerald-400">${d.sumRun ? total : '?'}</div>
+            </div>
+          </div>`;
+      }
+
+      else if (id === 'operator') {
+        const op = d.operator;
+        const map = {
+          '+': { label: 'Add', res: 12 + 4 },
+          '-': { label: 'Subtract', res: 12 - 4 },
+          '*': { label: 'Multiply', res: 12 * 4 },
+          '/': { label: 'Divide', res: 12 / 4 }
+        };
+        container.innerHTML = `
+          <p class="text-sm text-slate-600 mb-4">Choose an operator (+, -, *, /) to change what happens between <strong>12</strong> and <strong>4</strong>.</p>
+          <div class="flex flex-wrap items-center gap-3 mb-5">
+            ${Object.keys(map).map(sym => `
+              <button type="button" onclick="state.demoState.operator='${sym}'; renderInteractiveDemo('operator')" class="px-5 py-3 rounded-xl font-mono text-lg font-bold border-2 transition-all ${op === sym ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white text-slate-800 border-slate-200 hover:border-blue-400'}">
+                ${sym} <span class="font-sans text-xs ml-1 font-semibold">(${map[sym].label})</span>
+              </button>
+            `).join('')}
+          </div>
+          <div class="p-5 rounded-2xl bg-slate-900 text-white font-mono text-xl sm:text-2xl flex items-center justify-center gap-4">
+            <span>= 12</span>
+            <span class="px-3 py-1 rounded-lg bg-blue-600 text-white font-bold">${op}</span>
+            <span>4</span>
+            <span class="text-slate-400">=</span>
+            <span class="text-emerald-400 font-extrabold">${map[op].res}</span>
+          </div>`;
+      }
+
+      else if (id === 'query') {
+        const records = [
+          { name: 'Maya', major: 'IT', score: 92 },
+          { name: 'Liam', major: 'CS', score: 78 },
+          { name: 'Zeynep', major: 'IT', score: 88 },
+          { name: 'Can', major: 'MIS', score: 81 }
+        ];
+        const f = d.queryFilter;
+        const filtered = records.filter(r => {
+          if (f === 'it') return r.major === 'IT';
+          if (f === 'high') return r.score >= 85;
+          return true;
+        });
+        container.innerHTML = `
+          <p class="text-sm text-slate-600 mb-3">Select a query condition to retrieve only matching records from the database:</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <button type="button" onclick="state.demoState.queryFilter='all'; renderInteractiveDemo('query')" class="px-4 py-2 rounded-xl text-sm font-mono font-bold border ${f === 'all' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-300'}">Show All (4)</button>
+            <button type="button" onclick="state.demoState.queryFilter='it'; renderInteractiveDemo('query')" class="px-4 py-2 rounded-xl text-sm font-mono font-bold border ${f === 'it' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-300'}">WHERE Major = "IT"</button>
+            <button type="button" onclick="state.demoState.queryFilter='high'; renderInteractiveDemo('query')" class="px-4 py-2 rounded-xl text-sm font-mono font-bold border ${f === 'high' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-300'}">WHERE Score &gt;= 85</button>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-2.5">
+            ${filtered.map(r => `
+              <div class="p-3 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-between text-sm">
+                <span class="font-bold text-indigo-950">${r.name} <span class="text-xs font-normal text-indigo-700">(${r.major})</span></span>
+                <span class="font-mono font-bold text-indigo-700">Score: ${r.score}</span>
+              </div>
+            `).join('')}
+          </div>`;
+      }
+
+      else if (id === 'sort') {
+        let list = [
+          { name: 'Zeynep', score: 88 },
+          { name: 'Ali', score: 95 },
+          { name: 'Maya', score: 74 },
+          { name: 'Berk', score: 82 }
+        ];
+        if (d.sortMode === 'az') list.sort((a, b) => a.name.localeCompare(b.name));
+        if (d.sortMode === 'za') list.sort((a, b) => b.name.localeCompare(a.name));
+        if (d.sortMode === 'num') list.sort((a, b) => a.score - b.score);
+        container.innerHTML = `
+          <p class="text-sm text-slate-600 mb-3">Click a button to sort the list alphabetically or numerically:</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <button type="button" onclick="state.demoState.sortMode='az'; renderInteractiveDemo('sort')" class="px-4 py-2 rounded-xl text-sm font-bold border ${d.sortMode === 'az' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-800 border-slate-300'}">Sort Name (A → Z)</button>
+            <button type="button" onclick="state.demoState.sortMode='za'; renderInteractiveDemo('sort')" class="px-4 py-2 rounded-xl text-sm font-bold border ${d.sortMode === 'za' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-800 border-slate-300'}">Sort Name (Z → A)</button>
+            <button type="button" onclick="state.demoState.sortMode='num'; renderInteractiveDemo('sort')" class="px-4 py-2 rounded-xl text-sm font-bold border ${d.sortMode === 'num' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-800 border-slate-300'}">Sort Score (Low → High)</button>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-2.5">
+            ${list.map((item, i) => `
+              <div class="p-3 rounded-xl bg-canvas border border-borderwarm flex items-center justify-between text-sm">
+                <span class="font-semibold text-slate-900">${i + 1}. ${item.name}</span>
+                <span class="font-mono font-bold text-blue-700">${item.score}</span>
+              </div>
+            `).join('')}
+          </div>`;
+      }
+
+      else if (id === 'spreadsheets') {
+        const items = [
+          { name: 'Notebook', cost: 12 },
+          { name: 'USB Drive', cost: 18 },
+          { name: 'Coffee', cost: 6 }
+        ];
+        const total = items.reduce((s, it, i) => s + (d.sheetRowDone[i] ? it.cost : 0), 0);
+        container.innerHTML = `
+          <p class="text-sm text-slate-600 mb-3">Toggle items in this mini-spreadsheet to see how it updates the total cost automatically:</p>
+          <div class="space-y-2 mb-4">
+            ${items.map((it, i) => `
+              <button type="button" onclick="state.demoState.sheetRowDone[${i}]=!state.demoState.sheetRowDone[${i}]; renderInteractiveDemo('spreadsheets')" class="w-full p-3 rounded-xl border flex items-center justify-between text-sm transition-all ${d.sheetRowDone[i] ? 'bg-emerald-50 border-emerald-300 text-emerald-950' : 'bg-canvas border-borderwarm text-slate-500'}">
+                <span class="font-semibold">${d.sheetRowDone[i] ? '☑' : '☐'} ${it.name}</span>
+                <span class="font-mono font-bold">$${it.cost}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900 text-white flex items-center justify-between font-mono">
+            <span class="text-sm text-slate-300">=SUM(Selected Costs)</span>
+            <span class="text-xl font-bold text-emerald-400">$${total}</span>
+          </div>`;
+      }
+
+      else if (id === 'table') {
+        const mode = d.tableHighlight;
+        container.innerHTML = `
+          <p class="text-sm text-slate-600 mb-3">Switch between highlighting <strong>Rows</strong> (records) and <strong>Columns</strong> (fields) in this table:</p>
+          <div class="flex gap-2 mb-4">
+            <button type="button" onclick="state.demoState.tableHighlight='rows'; renderInteractiveDemo('table')" class="px-4 py-2 rounded-xl text-sm font-bold border ${mode === 'rows' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-300'}">Highlight Rows (Across)</button>
+            <button type="button" onclick="state.demoState.tableHighlight='cols'; renderInteractiveDemo('table')" class="px-4 py-2 rounded-xl text-sm font-bold border ${mode === 'cols' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-300'}">Highlight Columns (Down)</button>
+          </div>
+          <table class="w-full text-sm border-collapse border border-slate-200 rounded-xl overflow-hidden">
+            <thead class="bg-slate-100 text-slate-800">
+              <tr>
+                <th class="p-3 border border-slate-200 text-left ${mode === 'cols' ? 'bg-blue-100 text-blue-900' : ''}">City</th>
+                <th class="p-3 border border-slate-200 text-left">Temp</th>
+                <th class="p-3 border border-slate-200 text-left">Sky</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="${mode === 'rows' ? 'bg-emerald-50 font-semibold text-emerald-950' : ''}">
+                <td class="p-3 border border-slate-200 ${mode === 'cols' ? 'bg-blue-50 font-semibold text-blue-900' : ''}">Izmir</td>
+                <td class="p-3 border border-slate-200 font-mono">22°C</td>
+                <td class="p-3 border border-slate-200">Sunny</td>
+              </tr>
+              <tr>
+                <td class="p-3 border border-slate-200 ${mode === 'cols' ? 'bg-blue-50 font-semibold text-blue-900' : ''}">Ankara</td>
+                <td class="p-3 border border-slate-200 font-mono">14°C</td>
+                <td class="p-3 border border-slate-200">Clear</td>
+              </tr>
+            </tbody>
+          </table>`;
+      }
+
+      else if (id === 'worksheet') {
+        const sheets = {
+          January: { title: 'January Budget', items: [['Rent', '$400'], ['Food', '$180']] },
+          February: { title: 'February Budget', items: [['Rent', '$400'], ['Books', '$65']] },
+          March: { title: 'March Budget', items: [['Rent', '$400'], ['Travel', '$120']] }
+        };
+        const cur = d.activeWorksheet;
+        container.innerHTML = `
+          <p class="text-sm text-slate-600 mb-3">Click the worksheet tabs at the bottom to switch pages inside the same workbook file:</p>
+          <div class="rounded-2xl border border-slate-300 overflow-hidden bg-white">
+            <div class="p-4 bg-canvas border-b border-slate-200 font-bold text-slate-900">${sheets[cur].title}</div>
+            <div class="p-4 space-y-2">
+              ${sheets[cur].items.map(row => `
+                <div class="flex justify-between p-2.5 rounded-lg bg-slate-50 text-sm">
+                  <span class="font-medium text-slate-800">${row[0]}</span>
+                  <span class="font-mono font-bold text-emerald-700">${row[1]}</span>
+                </div>
+              `).join('')}
+            </div>
+            <div class="bg-slate-100 px-3 pt-2 flex gap-1.5 border-t border-slate-200">
+              ${Object.keys(sheets).map(name => `
+                <button type="button" onclick="state.demoState.activeWorksheet='${name}'; renderInteractiveDemo('worksheet')" class="px-4 py-2 rounded-t-lg text-xs font-bold transition-colors ${cur === name ? 'bg-white text-blue-700 border-t-2 border-blue-600' : 'text-slate-600 hover:bg-slate-200'}">
+                  ${name}
+                </button>
+              `).join('')}
+            </div>
+          </div>`;
+      }
+    }
+
+    document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+    document.getElementById('modal-prev-btn').addEventListener('click', () => {
+      if (state.currentModalIndex > 0) openModal(state.currentModalIndex - 1);
+    });
+    document.getElementById('modal-next-btn').addEventListener('click', () => {
+      if (state.currentModalIndex < VOCAB_DATA.length - 1) openModal(state.currentModalIndex + 1);
+    });
+    document.getElementById('learning-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'learning-modal') closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        document.getElementById('how-modal').classList.add('hidden');
+      }
+    });
+
+    // =========================================================================
+    // SECTION D — 4 INTERACTIVE CLASSROOM MINI-GAMES ("LET'S PRACTICE!")
+    // =========================================================================
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    // Game 1: Match the Word (2 rounds covering all 11 words)
+    const matchState = { round: 1, selectedWordId: null, matchedIds: [], score: 0, attempts: 0, roundItems: [], shuffledDefs: [] };
+    function initMatchGame(round = 1) {
+      matchState.round = round;
+      matchState.selectedWordId = null;
+      matchState.matchedIds = [];
+      if (round === 1) { matchState.score = 0; matchState.attempts = 0; }
+      const slice = round === 1 ? VOCAB_DATA.slice(0, 6) : VOCAB_DATA.slice(6, 11);
+      matchState.roundItems = slice;
+      matchState.shuffledDefs = shuffleArray(slice);
+      renderMatchGame();
+    }
+    function renderMatchGame() {
+      const stage = document.getElementById('game-stage');
+      const allMatched = matchState.matchedIds.length === matchState.roundItems.length;
+      if (allMatched) {
+        AudioFX.win();
+        stage.innerHTML = `
+          <div class="text-center py-8 space-y-4 animate-pop">
+            <div class="inline-flex w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 items-center justify-center text-3xl font-bold">✓</div>
+            <h3 class="text-3xl font-display font-extrabold text-slate-900">Round ${matchState.round} Complete!</h3>
+            <p class="text-lg text-slate-600">Score: <strong class="text-emerald-700">${matchState.score}</strong> correct matches in ${matchState.attempts} attempts.</p>
+            <div class="flex flex-wrap justify-center gap-3 pt-2">
+              ${matchState.round === 1
+                ? `<button type="button" onclick="initMatchGame(2)" class="px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold">Play Round 2 (Remaining 5 Words) →</button>`
+                : `<button type="button" onclick="initMatchGame(1)" class="px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold">Play Again</button>`
+              }
+            </div>
+          </div>`;
+        return;
+      }
+
+      stage.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-borderwarm">
+          <div>
+            <h3 class="text-xl font-display font-bold text-slate-900">Match the Word — Round ${matchState.round} of 2</h3>
+            <p class="text-sm text-slate-600">Step 1: Click a vocabulary word on the left. Step 2: Click its matching meaning on the right.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="px-3.5 py-1.5 rounded-full bg-white border border-borderwarm text-sm font-bold">Matched: ${matchState.matchedIds.length} / ${matchState.roundItems.length}</span>
+            <span class="px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold">Score: ${matchState.score}</span>
+          </div>
+        </div>
+        <div id="match-feedback" class="hidden mb-4 p-3 rounded-xl text-sm font-bold text-center"></div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="space-y-3">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Vocabulary Words</div>
+            ${matchState.roundItems.map(item => {
+              const done = matchState.matchedIds.includes(item.id);
+              const sel = matchState.selectedWordId === item.id;
+              return `<button type="button" ${done ? 'disabled' : ''} onclick="selectMatchWord('${item.id}')" class="w-full text-left p-4 rounded-2xl border-2 font-display font-bold text-lg transition-all ${done ? 'bg-emerald-50 border-emerald-300 text-emerald-700 opacity-60' : sel ? 'bg-blue-600 border-blue-600 text-white shadow-md' : 'bg-white border-slate-200 hover:border-blue-400 text-slate-900'}">${done ? '✓ ' : ''}${item.word}</button>`;
+            }).join('')}
+          </div>
+          <div class="space-y-3">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Definitions</div>
+            ${matchState.shuffledDefs.map(item => {
+              const done = matchState.matchedIds.includes(item.id);
+              return `<button type="button" ${done ? 'disabled' : ''} onclick="selectMatchDef('${item.id}')" class="w-full text-left p-4 rounded-2xl border-2 text-sm sm:text-base transition-all ${done ? 'bg-emerald-50 border-emerald-300 text-emerald-700 opacity-60' : 'bg-white border-slate-200 hover:border-blue-400 text-slate-700'}">${item.definition}</button>`;
+            }).join('')}
+          </div>
+        </div>`;
+    }
+    function selectMatchWord(id) {
+      matchState.selectedWordId = id;
+      renderMatchGame();
+    }
+    function selectMatchDef(defId) {
+      if (!matchState.selectedWordId) return;
+      matchState.attempts++;
+      const fb = document.getElementById('match-feedback');
+      if (matchState.selectedWordId === defId) {
+        AudioFX.success();
+        matchState.matchedIds.push(defId);
+        matchState.score++;
+        matchState.selectedWordId = null;
+        renderMatchGame();
+      } else {
+        AudioFX.error();
+        matchState.selectedWordId = null;
+        renderMatchGame();
+        const fbAfter = document.getElementById('match-feedback');
+        if (fbAfter) {
+          fbAfter.className = 'mb-4 p-3 rounded-xl text-sm font-bold text-center bg-rose-100 text-rose-900';
+          fbAfter.textContent = 'Not a match! Select a word and try another definition.';
+        }
+      }
+    }
+
+    // Game 2: Guess the Concept (All 11 visual clues)
+    const guessState = { pool: [], idx: 0, score: 0, answered: null };
+    function initGuessGame() {
+      guessState.pool = shuffleArray(VOCAB_DATA);
+      guessState.idx = 0;
+      guessState.score = 0;
+      guessState.answered = null;
+      renderGuessGame();
+    }
+    function renderGuessGame() {
+      const stage = document.getElementById('game-stage');
+      if (guessState.idx >= guessState.pool.length) {
+        AudioFX.win();
+        stage.innerHTML = `
+          <div class="text-center py-8 space-y-4 animate-pop">
+            <h3 class="text-3xl font-display font-extrabold text-slate-900">Guess the Concept Complete!</h3>
+            <p class="text-xl text-slate-700">You scored <strong class="text-indigo-700">${guessState.score} / ${guessState.pool.length}</strong></p>
+            <button type="button" onclick="initGuessGame()" class="px-6 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold">Play Again</button>
+          </div>`;
+        return;
+      }
+      const cur = guessState.pool[guessState.idx];
+      if (!cur._guessOpts) {
+        const distractors = shuffleArray(VOCAB_DATA.filter(v => v.id !== cur.id)).slice(0, 2);
+        cur._guessOpts = shuffleArray([cur, ...distractors]);
+      }
+      stage.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-borderwarm">
+          <div>
+            <h3 class="text-xl font-display font-bold text-slate-900">Guess the Concept — "What is this?"</h3>
+            <p class="text-sm text-slate-600">Look at the visual diagram and pick the matching vocabulary word.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="px-3.5 py-1.5 rounded-full bg-white border border-borderwarm text-sm font-bold">Question ${guessState.idx + 1} / ${guessState.pool.length}</span>
+            <span class="px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-800 text-sm font-bold">Score: ${guessState.score}</span>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div class="bg-white rounded-3xl border border-borderwarm p-6 flex flex-col items-center">
+            <div class="w-full max-w-xs">${cur.svgThumb}</div>
+            <p class="text-sm text-slate-500 mt-3 italic">${cur.clue}</p>
+          </div>
+          <div class="space-y-3">
+            <div class="text-lg font-display font-bold text-slate-900 mb-2">What is this?</div>
+            ${cur._guessOpts.map(opt => {
+              const isChosen = guessState.answered === opt.id;
+              const isRight = opt.id === cur.id;
+              let cls = 'bg-white border-slate-200 hover:border-indigo-400 text-slate-900';
+              if (guessState.answered) {
+                if (isRight) cls = 'bg-emerald-50 border-emerald-500 text-emerald-900';
+                else if (isChosen) cls = 'bg-rose-50 border-rose-400 text-rose-900';
+              }
+              return `<button type="button" ${guessState.answered ? 'disabled' : ''} onclick="answerGuess('${opt.id}')" class="w-full text-left p-4 rounded-2xl border-2 font-display font-bold text-lg transition-all ${cls}">${opt.word}</button>`;
+            }).join('')}
+            ${guessState.answered ? `
+              <div class="pt-3 flex items-center justify-between">
+                <span class="font-bold ${guessState.answered === cur.id ? 'text-emerald-700' : 'text-rose-700'}">${guessState.answered === cur.id ? '✓ Correct!' : '✕ That was ' + cur.word}</span>
+                <button type="button" onclick="nextGuess()" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold">Next →</button>
+              </div>` : ''}
+          </div>
+        </div>`;
+    }
+    function answerGuess(id) {
+      const cur = guessState.pool[guessState.idx];
+      guessState.answered = id;
+      if (id === cur.id) { guessState.score++; AudioFX.success(); } else { AudioFX.error(); }
+      renderGuessGame();
+    }
+    function nextGuess() {
+      guessState.idx++;
+      guessState.answered = null;
+      renderGuessGame();
+    }
+
+    // Game 3: Fill in the Blank (All 11 terms)
+    const blankState = { pool: [], idx: 0, score: 0, answered: null };
+    function initBlankGame() {
+      blankState.pool = shuffleArray(VOCAB_DATA);
+      blankState.idx = 0;
+      blankState.score = 0;
+      blankState.answered = null;
+      renderBlankGame();
+    }
+    function renderBlankGame() {
+      const stage = document.getElementById('game-stage');
+      if (blankState.idx >= blankState.pool.length) {
+        AudioFX.win();
+        stage.innerHTML = `
+          <div class="text-center py-8 space-y-4 animate-pop">
+            <h3 class="text-3xl font-display font-extrabold text-slate-900">Fill in the Blank Complete!</h3>
+            <p class="text-xl text-slate-700">Final Score: <strong class="text-emerald-700">${blankState.score} / ${blankState.pool.length}</strong></p>
+            <button type="button" onclick="initBlankGame()" class="px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold">Play Again</button>
+          </div>`;
+        return;
+      }
+      const cur = blankState.pool[blankState.idx];
+      const correctWord = cur.blankOptions[0];
+      if (!cur._blankShuffled) cur._blankShuffled = shuffleArray(cur.blankOptions);
+      stage.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-borderwarm">
+          <div>
+            <h3 class="text-xl font-display font-bold text-slate-900">Fill in the Blank</h3>
+            <p class="text-sm text-slate-600">Choose the missing vocabulary word that completes the sentence.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="px-3.5 py-1.5 rounded-full bg-white border border-borderwarm text-sm font-bold">Question ${blankState.idx + 1} / ${blankState.pool.length}</span>
+            <span class="px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold">Score: ${blankState.score}</span>
+          </div>
+        </div>
+        <div class="max-w-2xl mx-auto space-y-6 py-4">
+          <div class="p-6 rounded-2xl bg-white border border-borderwarm text-xl sm:text-2xl font-display font-bold text-slate-900 leading-relaxed text-center">
+            "${cur.blankSentence}"
+          </div>
+          <div class="grid sm:grid-cols-3 gap-3">
+            ${cur._blankShuffled.map(opt => {
+              let cls = 'bg-white border-slate-200 hover:border-emerald-400 text-slate-900';
+              if (blankState.answered) {
+                if (opt === correctWord) cls = 'bg-emerald-50 border-emerald-500 text-emerald-900';
+                else if (blankState.answered === opt) cls = 'bg-rose-50 border-rose-400 text-rose-900';
+              }
+              return `<button type="button" ${blankState.answered ? 'disabled' : ''} onclick="answerBlank('${opt}')" class="p-4 rounded-2xl border-2 font-display font-bold text-lg transition-all ${cls}">${opt}</button>`;
+            }).join('')}
+          </div>
+          ${blankState.answered ? `
+            <div class="flex items-center justify-between bg-white p-4 rounded-2xl border border-borderwarm">
+              <span class="font-bold ${blankState.answered === correctWord ? 'text-emerald-700' : 'text-rose-700'}">${blankState.answered === correctWord ? '✓ Great job!' : '✕ Correct answer: ' + correctWord}</span>
+              <button type="button" onclick="nextBlank()" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold">Next →</button>
+            </div>` : ''}
+        </div>`;
+    }
+    function answerBlank(opt) {
+      const cur = blankState.pool[blankState.idx];
+      blankState.answered = opt;
+      if (opt === cur.blankOptions[0]) { blankState.score++; AudioFX.success(); } else { AudioFX.error(); }
+      renderBlankGame();
+    }
+    function nextBlank() {
+      blankState.idx++;
+      blankState.answered = null;
+      renderBlankGame();
+    }
+
+    // Game 4: True or False
+    const tfExtraFalse = [
+      { statement: 'A database field is a horizontal row that holds only one student\'s data.', answer: false, explain: 'False! A database field is a vertical column (like Name or Email), not a row.' },
+      { statement: 'A query is used to add two numbers like =A1+B1 in a spreadsheet.', answer: false, explain: 'False! =A1+B1 is a spreadsheet formula. A query searches a database.' },
+      { statement: 'A worksheet can only hold one single cell.', answer: false, explain: 'False! A worksheet is an entire page grid made of thousands of cells.' }
+    ];
+    const tfState = { pool: [], idx: 0, score: 0, answered: null };
+    function initTFGame() {
+      const items = [
+        ...VOCAB_DATA.slice(0, 6).map(v => ({ statement: v.tfStatement, answer: v.tfAnswer, explain: v.tfExplain })),
+        ...tfExtraFalse
+      ];
+      tfState.pool = shuffleArray(items);
+      tfState.idx = 0;
+      tfState.score = 0;
+      tfState.answered = null;
+      renderTFGame();
+    }
+    function renderTFGame() {
+      const stage = document.getElementById('game-stage');
+      if (tfState.idx >= tfState.pool.length) {
+        AudioFX.win();
+        stage.innerHTML = `
+          <div class="text-center py-8 space-y-4 animate-pop">
+            <h3 class="text-3xl font-display font-extrabold text-slate-900">True or False Complete!</h3>
+            <p class="text-xl text-slate-700">Score: <strong class="text-amber-700">${tfState.score} / ${tfState.pool.length}</strong></p>
+            <button type="button" onclick="initTFGame()" class="px-6 py-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold">Play Again</button>
+          </div>`;
+        return;
+      }
+      const cur = tfState.pool[tfState.idx];
+      stage.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-borderwarm">
+          <div>
+            <h3 class="text-xl font-display font-bold text-slate-900">True or False</h3>
+            <p class="text-sm text-slate-600">Decide if each statement is TRUE or FALSE.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="px-3.5 py-1.5 rounded-full bg-white border border-borderwarm text-sm font-bold">Question ${tfState.idx + 1} / ${tfState.pool.length}</span>
+            <span class="px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-sm font-bold">Score: ${tfState.score}</span>
+          </div>
+        </div>
+        <div class="max-w-2xl mx-auto space-y-6 py-4">
+          <div class="p-6 rounded-2xl bg-white border border-borderwarm text-xl sm:text-2xl font-display font-bold text-slate-900 text-center">
+            "${cur.statement}"
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <button type="button" ${tfState.answered !== null ? 'disabled' : ''} onclick="answerTF(true)" class="p-5 rounded-2xl border-2 font-display font-extrabold text-xl transition-all ${tfState.answered !== null && cur.answer === true ? 'bg-emerald-50 border-emerald-500 text-emerald-800' : tfState.answered === true ? 'bg-rose-50 border-rose-400 text-rose-800' : 'bg-white border-slate-200 hover:border-emerald-500 text-slate-900'}">TRUE</button>
+            <button type="button" ${tfState.answered !== null ? 'disabled' : ''} onclick="answerTF(false)" class="p-5 rounded-2xl border-2 font-display font-extrabold text-xl transition-all ${tfState.answered !== null && cur.answer === false ? 'bg-emerald-50 border-emerald-500 text-emerald-800' : tfState.answered === false ? 'bg-rose-50 border-rose-400 text-rose-800' : 'bg-white border-slate-200 hover:border-rose-500 text-slate-900'}">FALSE</button>
+          </div>
+          ${tfState.answered !== null ? `
+            <div class="p-4 rounded-2xl bg-white border border-borderwarm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="text-sm font-medium text-slate-800"><strong>${tfState.answered === cur.answer ? '✓ Correct!' : '✕ Not quite!'}</strong> ${cur.explain}</div>
+              <button type="button" onclick="nextTF()" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold shrink-0">Next →</button>
+            </div>` : ''}
+        </div>`;
+    }
+    function answerTF(val) {
+      const cur = tfState.pool[tfState.idx];
+      tfState.answered = val;
+      if (val === cur.answer) { tfState.score++; AudioFX.success(); } else { AudioFX.error(); }
+      renderTFGame();
+    }
+    function nextTF() {
+      tfState.idx++;
+      tfState.answered = null;
+      renderTFGame();
+    }
+
+    document.querySelectorAll('.game-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.activeGame = btn.dataset.game;
+        document.querySelectorAll('.game-tab-btn').forEach(b => {
+          b.className = 'game-tab-btn text-left p-4 sm:p-5 rounded-2xl border-2 border-borderwarm bg-canvas hover:bg-slate-50 transition-all';
+        });
+        btn.className = 'game-tab-btn text-left p-4 sm:p-5 rounded-2xl border-2 border-blue-600 bg-blue-50/70 transition-all';
+        if (state.activeGame === 'match') initMatchGame(1);
+        if (state.activeGame === 'guess') initGuessGame();
+        if (state.activeGame === 'blank') initBlankGame();
+        if (state.activeGame === 'tf') initTFGame();
+      });
+    });
+
+    // =========================================================================
+    // SECTION E — FINAL KNOWLEDGE CHALLENGE ("ARE YOU A DATA MASTER?")
+    // =========================================================================
+    const masterQuiz = { pool: [], idx: 0, score: 0, answered: null };
+    function initMasterQuiz() {
+      masterQuiz.pool = shuffleArray(VOCAB_DATA).map(v => {
+        const opts = shuffleArray(v.checkOptions.map((text, idx) => ({ text, isCorrect: idx === v.checkCorrect })));
+        return { word: v.word, question: v.checkQuestion, opts, feedbackCorrect: v.checkFeedbackCorrect };
+      });
+      masterQuiz.idx = 0;
+      masterQuiz.score = 0;
+      masterQuiz.answered = null;
+      renderMasterQuiz();
+    }
+    function renderMasterQuiz() {
+      const stage = document.getElementById('master-quiz-stage');
+      if (masterQuiz.idx >= masterQuiz.pool.length) {
+        AudioFX.win();
+        const s = masterQuiz.score;
+        let rank = 'Data Beginner', rankColor = 'text-amber-300', msg = 'Great start! Review the 11 interactive lessons and try again.';
+        if (s >= 5 && s <= 8) { rank = 'Spreadsheet Explorer'; rankColor = 'text-blue-300'; msg = 'Nice work! You know your way around grids, formulas, and tables.'; }
+        if (s >= 9) { rank = 'Data Master'; rankColor = 'text-emerald-300', msg = 'Outstanding! You have mastered both Spreadsheets and Databases!'; }
+
+        stage.innerHTML = `
+          <div class="text-center py-6 space-y-5 animate-pop">
+            <div class="text-xs font-bold uppercase tracking-widest text-slate-400">Your Classroom Achievement Level</div>
+            <h3 class="text-4xl sm:text-5xl font-display font-extrabold ${rankColor}">${rank}</h3>
+            <div class="text-2xl font-mono font-bold text-white">${s} / 11 Correct</div>
+            <p class="text-slate-300 max-w-lg mx-auto">${msg}</p>
+            <div class="grid grid-cols-3 gap-3 max-w-lg mx-auto text-xs pt-2">
+              <div class="p-3 rounded-xl border ${s <= 4 ? 'bg-amber-500/20 border-amber-400 text-amber-200' : 'bg-slate-900/40 border-slate-700 text-slate-400'}">0–4: Data Beginner</div>
+              <div class="p-3 rounded-xl border ${s >= 5 && s <= 8 ? 'bg-blue-500/20 border-blue-400 text-blue-200' : 'bg-slate-900/40 border-slate-700 text-slate-400'}">5–8: Spreadsheet Explorer</div>
+              <div class="p-3 rounded-xl border ${s >= 9 ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200' : 'bg-slate-900/40 border-slate-700 text-slate-400'}">9–11: Data Master</div>
+            </div>
+            <div class="pt-4">
+              <button type="button" onclick="initMasterQuiz()" class="px-8 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-display font-extrabold text-lg shadow-lg transition-all">PLAY AGAIN</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      const cur = masterQuiz.pool[masterQuiz.idx];
+      const pct = Math.round(((masterQuiz.idx) / masterQuiz.pool.length) * 100);
+      stage.innerHTML = `
+        <div class="flex items-center justify-between gap-4 mb-4">
+          <span class="text-sm font-mono font-bold text-blue-300">Question ${masterQuiz.idx + 1} of 11 • Topic: ${cur.word}</span>
+          <span class="text-sm font-mono font-bold text-emerald-300">Score: ${masterQuiz.score}</span>
+        </div>
+        <div class="h-2 w-full bg-slate-700 rounded-full overflow-hidden mb-6">
+          <div class="h-full bg-blue-500 transition-all duration-300" style="width:${pct}%"></div>
+        </div>
+        <h3 class="text-2xl font-display font-bold text-white mb-6">${cur.question}</h3>
+        <div class="space-y-3">
+          ${cur.opts.map((o, i) => {
+            let cls = 'bg-slate-900/70 border-slate-700 hover:border-blue-400 text-slate-100';
+            if (masterQuiz.answered !== null) {
+              if (o.isCorrect) cls = 'bg-emerald-500/20 border-emerald-400 text-emerald-200';
+              else if (masterQuiz.answered === i) cls = 'bg-rose-500/20 border-rose-400 text-rose-200';
+            }
+            return `<button type="button" ${masterQuiz.answered !== null ? 'disabled' : ''} onclick="answerMaster(${i})" class="w-full text-left p-4 rounded-2xl border-2 font-medium text-base sm:text-lg transition-all flex items-center gap-3 ${cls}">
+              <span class="w-8 h-8 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center font-mono text-sm font-bold shrink-0">${String.fromCharCode(65 + i)}</span>
+              <span>${o.text}</span>
+            </button>`;
+          }).join('')}
+        </div>
+        ${masterQuiz.answered !== null ? `
+          <div class="mt-6 pt-4 border-t border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <span class="text-sm font-semibold ${cur.opts[masterQuiz.answered].isCorrect ? 'text-emerald-300' : 'text-rose-300'}">
+              ${cur.opts[masterQuiz.answered].isCorrect ? '✓ ' + cur.feedbackCorrect : '✕ Not quite—the green option is correct.'}
+            </span>
+            <button type="button" onclick="nextMaster()" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold shrink-0">Next Question →</button>
+          </div>` : ''}`;
+    }
+    function answerMaster(i) {
+      const cur = masterQuiz.pool[masterQuiz.idx];
+      masterQuiz.answered = i;
+      if (cur.opts[i].isCorrect) { masterQuiz.score++; AudioFX.success(); } else { AudioFX.error(); }
+      renderMasterQuiz();
+    }
+    function nextMaster() {
+      masterQuiz.idx++;
+      masterQuiz.answered = null;
+      renderMasterQuiz();
+    }
+
+    // =========================================================================
+    // SECTION F — SCENARIO CHOOSER
+    // =========================================================================
+    const SCENARIOS = [
+      { title: 'Monthly Club Budget', winner: 'Spreadsheet', color: 'emerald', reason: 'A spreadsheet is ideal for a small list of expenses and automatic =SUM() calculations.' },
+      { title: '5,000 Student Profiles', winner: 'Database', color: 'indigo', reason: 'A database is built to store, connect, and query thousands of student and course records.' },
+      { title: '15 Quiz Scores & Average', winner: 'Spreadsheet', color: 'emerald', reason: 'A quick grid with =AVERAGE() makes small class calculations fast and visual.' },
+      { title: 'Online Store Orders & Users', winner: 'Database', color: 'indigo', reason: 'An online store needs connected tables (Users, Products, Orders) managed by a database.' }
+    ];
+    function renderScenarios() {
+      document.getElementById('scenario-chooser').innerHTML = SCENARIOS.map((sc, i) => `
+        <button type="button" onclick="showScenario(${i})" class="text-left p-4 rounded-2xl bg-canvas border border-borderwarm hover:border-blue-400 transition-all">
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Scenario ${i + 1}</div>
+          <div class="font-display font-bold text-slate-900">${sc.title}</div>
+        </button>
+      `).join('');
+    }
+    function showScenario(i) {
+      const sc = SCENARIOS[i];
+      const box = document.getElementById('scenario-answer');
+      box.className = `mt-5 rounded-2xl p-5 border animate-pop ${sc.color === 'emerald' ? 'bg-emerald-50 border-emerald-200 text-emerald-950' : 'bg-indigo-50 border-indigo-200 text-indigo-950'}`;
+      box.innerHTML = `<strong>Best Choice: ${sc.winner}</strong> — ${sc.reason}`;
+    }
+
+    // =========================================================================
+    // HERO & HEADER CONTROLS
+    // =========================================================================
+    document.getElementById('hero-start-btn').addEventListener('click', () => {
+      document.getElementById('explorer').scrollIntoView({ behavior: 'smooth' });
+    });
+    document.getElementById('hero-how-btn').addEventListener('click', () => {
+      document.getElementById('how-modal').classList.remove('hidden');
+    });
+    document.getElementById('how-close-btn').addEventListener('click', () => {
+      document.getElementById('how-modal').classList.add('hidden');
+    });
+    document.getElementById('how-start-btn').addEventListener('click', () => {
+      document.getElementById('how-modal').classList.add('hidden');
+      document.getElementById('explorer').scrollIntoView({ behavior: 'smooth' });
+    });
+    document.getElementById('sound-toggle-btn').addEventListener('click', () => {
+      AudioFX.enabled = !AudioFX.enabled;
+      document.getElementById('sound-icon-on').classList.toggle('hidden', !AudioFX.enabled);
+      document.getElementById('sound-icon-off').classList.toggle('hidden', AudioFX.enabled);
+    });
+
+    // INITIALIZE APP
+    updateProgressUI();
+    renderExplorer();
+    initMatchGame(1);
+    initMasterQuiz();
+    renderScenarios();
+  </script>
+</body>
+</html>
